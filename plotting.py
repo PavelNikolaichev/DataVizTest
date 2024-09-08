@@ -257,7 +257,9 @@ def plot_clustered_percentage_bar_data(
     return fig
 
 
-def x_y_boxplot(x: str, y: str, df=data, groups=None, grouping_type="sum") -> go.Figure:
+def x_y_boxplot(
+    x: str, y: str, df: pd.DataFrame, groups=None, grouping_type="sum"
+) -> go.Figure:
     """
     Generate a boxplot with the x-axis as a categorical variable and y-axis as a numeric variable.
 
