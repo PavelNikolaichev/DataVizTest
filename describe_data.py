@@ -3,7 +3,7 @@ import pandas as pd
 from IPython.display import display, clear_output
 import ipywidgets as widgets
 
-from export_data import download_excel
+from .export_data import download_excel
 
 
 def count_table(filtered_df: pd.DataFrame, selections: dict):
