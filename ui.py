@@ -10,10 +10,10 @@ import pandas as pd
 
 from IPython.display import display, clear_output
 
-from describe_data import count_table, summary_statistics
-from filter_data import filter_dataframe
-from plotting import render_graph
-from widgets import FilterOptionWidget
+from .describe_data import count_table, summary_statistics
+from .filter_data import filter_dataframe
+from .plotting import render_graph
+from .widgets import FilterOptionWidget
 
 
 def create_ui(df, categorical_attributes):

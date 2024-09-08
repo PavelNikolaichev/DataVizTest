@@ -20,7 +20,7 @@ from ipywidgets import (
 )
 
 from google.colab import output, drive, files
-from ui import make_selection_menu
+from .ui import make_selection_menu
 
 drive.mount("/content/drive")
 
