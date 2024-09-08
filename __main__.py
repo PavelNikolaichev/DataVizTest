@@ -1,11 +1,8 @@
 import numpy as np
 import pandas as pd
 
-import ui
-
-from . import data_processing
-from . import plotting
-from . import selection
+import ClientStateMachine
+from ui import main_menu
 
 if __name__ == "__main__":
     # That's just example how it can be used.
@@ -38,4 +35,10 @@ if __name__ == "__main__":
         except Exception as error:
             option_value_dictionary[attribute] = tuple(option_values)
 
-    ui.create_ui(options_list, option_value_dictionary)
+    df = data
+    filtered_df = None
+    selections = {}
+
+    csm = ClientStateMachine()
+
+    main_menu(df)
