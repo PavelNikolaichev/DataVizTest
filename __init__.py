@@ -1,15 +1,4 @@
-data = None
-filtered_df = None
-selections = {}
-
-
-numerical_attributes = []
-categorical_attributes = []
-
 from .ClientStateMachine import ClientStateMachine
-
-csm = ClientStateMachine()
-
 from .ui import main_menu
 from .data_processing import *
 from .plotting import *
@@ -23,6 +12,14 @@ def run(data: pd.DataFrame):
         )
 
     global filtered_df, selections, numerical_attributes, categorical_attributes, csm
+    data = None
+    filtered_df = None
+    selections = {}
+
+    numerical_attributes = []
+    categorical_attributes = []
+
+    csm = ClientStateMachine()
     numerical_attributes = (
         data.select_dtypes(include=[np.number]).columns.sort_values().tolist()
     )
