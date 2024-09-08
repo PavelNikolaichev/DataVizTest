@@ -53,4 +53,4 @@ def run(data: pd.DataFrame):
     filtered_df = None
     selections = {}
 
-    main_menu(data)
+    main_menu(data, csm)
