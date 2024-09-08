@@ -1,17 +1,19 @@
-from .ClientStateMachine import ClientStateMachine
-from .ui import main_menu
-from .data_processing import *
-from .plotting import *
-from .selection import *
-
 data = None
 filtered_df = None
 selections = {}
 
-csm = ClientStateMachine()
 
 numerical_attributes = []
 categorical_attributes = []
+
+from .ClientStateMachine import ClientStateMachine
+
+csm = ClientStateMachine()
+
+from .ui import main_menu
+from .data_processing import *
+from .plotting import *
+from .selection import *
 
 
 def run(data: pd.DataFrame):
