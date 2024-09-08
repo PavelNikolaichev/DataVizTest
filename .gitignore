@@ -1,0 +1,12 @@
+*.pyc
+*.pyo
+*.egg-info
+*.dist-info
+*.cache
+*.log
+*.DS_Store
+*.swp
+venv
+__pycache__
+
+.vscode
