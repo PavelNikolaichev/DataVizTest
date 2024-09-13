@@ -121,10 +121,9 @@ Instructions
 
 You will be promoted for an IPUMS API key. Use the one you got when setting up IPUMS account. Copy and paste it into the cell when prompted
 """
-global data
-# from nl4ds.chatipums import load_extract
+from nl4ds.chatipums import load_extract
 
-# data, codebook1 = load_extract()
+data, codebook1 = load_extract()
 """All the things that requires no input
 
 # Step 3: Run Data Processing Components
