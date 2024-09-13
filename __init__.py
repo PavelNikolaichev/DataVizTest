@@ -39,14 +39,25 @@ from nl4ds.eda_functions import *
 # from .plotting import *
 # from .selection import *
 
+data = None
+df = None
+filtered_df = None
+selections = {}
+numerical_attributes = []
+categorical_attributes = []
+options_list = []
+option_value_dictionary = {}
+csm = None
 
-def run(data: pd.DataFrame):
-    if not isinstance(data, pd.DataFrame):
+
+def run(_data: pd.DataFrame):
+    if not isinstance(_data, pd.DataFrame):
         raise ValueError(
             "You must initialize global variable `data`. It must be a pandas DataFrame instance"
         )
 
-    global filtered_df, selections, numerical_attributes, categorical_attributes, csm
+    global filtered_df, selections, numerical_attributes, categorical_attributes, csm, data, options_list, option_value_dictionary
+    data = _data
     filtered_df = None
     selections = {}
 
@@ -84,6 +95,7 @@ def run(data: pd.DataFrame):
     filtered_df = None
     selections = {}
 
+    clear_output()
     main_menu(data)
 
 
@@ -121,41 +133,41 @@ Instructions
 
 You will be promoted for an IPUMS API key. Use the one you got when setting up IPUMS account. Copy and paste it into the cell when prompted
 """
-from nl4ds.chatipums import load_extract
+# from nl4ds.chatipums import load_extract
 
-data, codebook1 = load_extract()
+# data, codebook1 = load_extract()
 """All the things that requires no input
 
 # Step 3: Run Data Processing Components
 """
 
-numerical_attributes = (
-    data.select_dtypes(include=[np.number]).columns.sort_values().tolist()
-)
-categorical_attributes = (
-    data.select_dtypes(exclude=[np.number]).columns.sort_values().tolist()
-)
+# numerical_attributes = (
+#     data.select_dtypes(include=[np.number]).columns.sort_values().tolist()
+# )
+# categorical_attributes = (
+#     data.select_dtypes(exclude=[np.number]).columns.sort_values().tolist()
+# )
 
 
-options_list = data.columns.sort_values().tolist()
-option_value_dictionary = {}
-for attribute in data.columns:
-    options_list.append(attribute)
-    option_values = data[attribute].unique()
+# options_list = data.columns.sort_values().tolist()
+# option_value_dictionary = {}
+# for attribute in data.columns:
+#     options_list.append(attribute)
+#     option_values = data[attribute].unique()
 
-    try:
-        if float("nan") or np.nan or pd.NA in option_values:
-            option_values = option_values[~pd.isna(option_values)]
-            nan_ind = np.where(option_values == "nan")[0]
-            if nan_ind.size > 0:
-                option_values = np.delete(option_values, nan_ind[0])
-            option_value_dictionary[attribute] = tuple(["nan"]) + tuple(
-                sorted(option_values)
-            )
-        else:
-            option_value_dictionary[attribute] = tuple(sorted(option_values))
-    except Exception as error:
-        option_value_dictionary[attribute] = tuple(option_values)
+#     try:
+#         if float("nan") or np.nan or pd.NA in option_values:
+#             option_values = option_values[~pd.isna(option_values)]
+#             nan_ind = np.where(option_values == "nan")[0]
+#             if nan_ind.size > 0:
+#                 option_values = np.delete(option_values, nan_ind[0])
+#             option_value_dictionary[attribute] = tuple(["nan"]) + tuple(
+#                 sorted(option_values)
+#             )
+#         else:
+#             option_value_dictionary[attribute] = tuple(sorted(option_values))
+#     except Exception as error:
+#         option_value_dictionary[attribute] = tuple(option_values)
 
 """# Step 4: Run "Make Selection" components
 ---> Terminally A list *Selection* containing attribute_values pairs we want
@@ -1631,7 +1643,5 @@ def desdcribe_selection_menu(df: pd.DataFrame):
 df = data
 filtered_df = None
 selections = {}
-
-
 csm = ClientStateMachine()
-run(df)
+# run(df)
