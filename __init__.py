@@ -84,7 +84,7 @@ def run(data: pd.DataFrame):
     filtered_df = None
     selections = {}
 
-    main_menu(data, csm)
+    main_menu(data)
 
 
 # -*- coding: utf-8 -*-
