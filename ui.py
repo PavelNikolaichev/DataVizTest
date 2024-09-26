@@ -5,6 +5,8 @@ import plotly.graph_objects as go
 import ipywidgets as widgets
 from functools import reduce
 
+from data_processing import delete_selections, numeric_selections
+
 from .settings import *
 
 from ipywidgets import interact, widgets, Layout
@@ -342,7 +344,6 @@ def make_selection_menu(df: pd.DataFrame):
     for attribute, value in selections.items():
         print(f"{attribute}: {value}")
 
-    def selection_mode(button):
         try:
             chosen = dropdown.value
             if chosen == "1":
