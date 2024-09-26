@@ -284,7 +284,8 @@ def plotting(data, filter_list):
     display(Layout)
 
 
-def main_menu(df: pd.DataFrame, csm):
+def main_menu(df: pd.DataFrame):
+    global csm
     global selections
 
     csm.set_state("State Choosing")
