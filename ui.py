@@ -284,7 +284,14 @@ def plotting(data, filter_list):
     display(Layout)
 
 
-from .settings import selections
+from settings import *
+from settings import (
+    selections,
+    options_list,
+    option_value_dictionary,
+    numerical_attributes,
+    categorical_attributes,
+)
 
 
 def main_menu(df: pd.DataFrame, csm):
