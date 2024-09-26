@@ -96,7 +96,7 @@ def run(_data: pd.DataFrame):
     selections = {}
 
     clear_output()
-    main_menu(data)
+    main_menu(data, csm)
 
 
 # -*- coding: utf-8 -*-
