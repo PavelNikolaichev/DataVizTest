@@ -4,7 +4,7 @@ import plotly.express as px
 import plotly.graph_objects as go
 from .filter_data import and_filter_subset, filter_subset
 
-from __init__ import *
+from .settings import *
 
 
 def x_y_scatter(

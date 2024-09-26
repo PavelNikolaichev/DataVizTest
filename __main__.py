@@ -4,7 +4,7 @@ import pandas as pd
 import ClientStateMachine
 from ui import main_menu
 
-from __init__ import *
+from .settings import *
 
 if __name__ == "__main__":
     # That's just example how it can be used.

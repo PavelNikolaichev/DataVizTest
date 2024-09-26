@@ -4,7 +4,7 @@ from IPython.display import display, clear_output
 import ipywidgets as widgets
 
 from .export_data import download_excel
-from __init__ import *
+from .settings import *
 
 
 def count_table(filtered_df: pd.DataFrame, selections: dict):

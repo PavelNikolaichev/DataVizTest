@@ -33,21 +33,12 @@ drive.mount("/content/drive")
 from nl4ds.chatipums import *
 from nl4ds.eda_functions import *
 
+from .settings import *
 from .ClientStateMachine import ClientStateMachine
 from .ui import main_menu
 from .data_processing import *
 from .plotting import *
 from .selection import *
-
-data = None
-df = None
-filtered_df = None
-selections = {}
-numerical_attributes = []
-categorical_attributes = []
-options_list = []
-option_value_dictionary = {}
-csm = None
 
 
 def run(_data: pd.DataFrame):

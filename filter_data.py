@@ -2,7 +2,7 @@ from functools import reduce
 from typing import Dict, Union
 import pandas as pd
 
-from __init__ import *
+from .settings import *
 
 
 def filter_dataframe(dataframe: pd.DataFrame, selection: dict) -> pd.DataFrame:
