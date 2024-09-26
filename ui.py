@@ -285,6 +285,7 @@ def plotting(data, filter_list):
 
 
 def main_menu(df: pd.DataFrame, csm):
+    global selections
     csm.set_state("State Choosing")
     print("--" * 20)
     print("This is the main menu, you have the following three things you can do.")
