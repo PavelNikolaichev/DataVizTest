@@ -33,11 +33,11 @@ drive.mount("/content/drive")
 from nl4ds.chatipums import *
 from nl4ds.eda_functions import *
 
-# from .ClientStateMachine import ClientStateMachine
-# from .ui import main_menu
-# from .data_processing import *
-# from .plotting import *
-# from .selection import *
+from .ClientStateMachine import ClientStateMachine
+from .ui import main_menu
+from .data_processing import *
+from .plotting import *
+from .selection import *
 
 data = None
 df = None
@@ -176,1465 +176,1465 @@ You will be promoted for an IPUMS API key. Use the one you got when setting up I
 """
 
 
-def numeric_selections(df: pd.DataFrame):
-    # Sample DataFrame
-    # df = trial
-    # selections = {}
+# def numeric_selections(df: pd.DataFrame):
+#     # Sample DataFrame
+#     # df = trial
+#     # selections = {}
 
-    temp_range_holder = None
+#     temp_range_holder = None
 
-    def create_attribute_dropdown():
-        return widgets.Dropdown(
-            options=numerical_attributes,
-            value=numerical_attributes[0],
-            description="Variable:",
-        )
+#     def create_attribute_dropdown():
+#         return widgets.Dropdown(
+#             options=numerical_attributes,
+#             value=numerical_attributes[0],
+#             description="Variable:",
+#         )
 
-    def create_value_slider(attribute):
-        min_value, max_value = df[attribute].min(), df[attribute].max()
-        step_size = max(1, (max_value - min_value) // 20)
+#     def create_value_slider(attribute):
+#         min_value, max_value = df[attribute].min(), df[attribute].max()
+#         step_size = max(1, (max_value - min_value) // 20)
 
-        return widgets.IntRangeSlider(
-            value=[min_value, max_value],
-            min=min_value,
-            max=max_value,
-            step=step_size,
-            description="Range:",
-        )
+#         return widgets.IntRangeSlider(
+#             value=[min_value, max_value],
+#             min=min_value,
+#             max=max_value,
+#             step=step_size,
+#             description="Range:",
+#         )
 
-    def display_current_value(value):
-        global temp_range_holder
-        temp_range_holder = value
+#     def display_current_value(value):
+#         global temp_range_holder
+#         temp_range_holder = value
 
-    def display_slider_value(attribute):
-        value_slider = create_value_slider(attribute)
-        widgets.interact(
-            display_current_value,
-            attribute=widgets.fixed(attribute),
-            value=value_slider,
-        )
+#     def display_slider_value(attribute):
+#         value_slider = create_value_slider(attribute)
+#         widgets.interact(
+#             display_current_value,
+#             attribute=widgets.fixed(attribute),
+#             value=value_slider,
+#         )
 
-    def update_and_display(attribute):
-        display_slider_value(attribute)
+#     def update_and_display(attribute):
+#         display_slider_value(attribute)
 
-    attribute_dropdown = create_attribute_dropdown()
-    range_show = widgets.interactive(update_and_display, attribute=attribute_dropdown)
-    display(range_show)
+#     attribute_dropdown = create_attribute_dropdown()
+#     range_show = widgets.interactive(update_and_display, attribute=attribute_dropdown)
+#     display(range_show)
 
-    def add_selection(button):
-        global selections, temp_range_holder
-        print("--" * 20)
-        selected_attribute, selected_values = (
-            attribute_dropdown.value,
-            temp_range_holder,
-        )
-        # print(f"[DEBUG]: type of selected_values: {type(selected_values)}")
+#     def add_selection(button):
+#         global selections, temp_range_holder
+#         print("--" * 20)
+#         selected_attribute, selected_values = (
+#             attribute_dropdown.value,
+#             temp_range_holder,
+#         )
+#         # print(f"[DEBUG]: type of selected_values: {type(selected_values)}")
 
-        if selected_attribute in selections:
-            if isinstance(selected_values, list):
-                print(
-                    f"Selection added A RANGE(Closed Inteval): {selected_attribute} - {list(selected_values)}"
-                )
-                selections[selected_attribute].append(list(selected_values))
-            else:
-                start, end = selected_values
-                values = selections[selected_attribute]
+#         if selected_attribute in selections:
+#             if isinstance(selected_values, list):
+#                 print(
+#                     f"Selection added A RANGE(Closed Inteval): {selected_attribute} - {list(selected_values)}"
+#                 )
+#                 selections[selected_attribute].append(list(selected_values))
+#             else:
+#                 start, end = selected_values
+#                 values = selections[selected_attribute]
 
-                values.extend(
-                    [
-                        item
-                        for item in df[selected_attribute].unique()
-                        if start <= item <= end and item not in values
-                    ]
-                )
-                selections[selected_attribute] = sorted(values)
-                # values = list(tuple(values))
-                print(f"Selection updated: {selected_attribute} - {values}")
-        else:
-            if isinstance(selected_values, list):
-                print(
-                    f"Selection added A RANGE(Closed Inteval): {selected_attribute} - {list(selected_values)}"
-                )
-                selections[selected_attribute] = [list(selected_values)]
-            else:
-                start, end = selected_values
+#                 values.extend(
+#                     [
+#                         item
+#                         for item in df[selected_attribute].unique()
+#                         if start <= item <= end and item not in values
+#                     ]
+#                 )
+#                 selections[selected_attribute] = sorted(values)
+#                 # values = list(tuple(values))
+#                 print(f"Selection updated: {selected_attribute} - {values}")
+#         else:
+#             if isinstance(selected_values, list):
+#                 print(
+#                     f"Selection added A RANGE(Closed Inteval): {selected_attribute} - {list(selected_values)}"
+#                 )
+#                 selections[selected_attribute] = [list(selected_values)]
+#             else:
+#                 start, end = selected_values
 
-                selections[selected_attribute] = sorted(
-                    [
-                        item
-                        for item in df[selected_attribute].unique()
-                        if start <= item <= end
-                    ]
-                )
+#                 selections[selected_attribute] = sorted(
+#                     [
+#                         item
+#                         for item in df[selected_attribute].unique()
+#                         if start <= item <= end
+#                     ]
+#                 )
 
-                print(
-                    f"Selection added: {selected_attribute} - {selections[selected_attribute]}"
-                )
+#                 print(
+#                     f"Selection added: {selected_attribute} - {selections[selected_attribute]}"
+#                 )
 
-        print(f"Current Selection:{selections}")
+#         print(f"Current Selection:{selections}")
 
-    def clear(button):
-        print("--" * 20)
-        global selections
+#     def clear(button):
+#         print("--" * 20)
+#         global selections
 
-        selected_attribute = attribute_dropdown.value
-        selections.pop(selected_attribute, None)
+#         selected_attribute = attribute_dropdown.value
+#         selections.pop(selected_attribute, None)
 
-        print(f"All values cleared for {selected_attribute}")
-        print(f"Current Selection:{selections}")
+#         print(f"All values cleared for {selected_attribute}")
+#         print(f"Current Selection:{selections}")
 
-    def finish(button):
-        global selections
+#     def finish(button):
+#         global selections
 
-        print("--" * 20)
+#         print("--" * 20)
 
-        print("Final Selections:", selections)
-        make_selection_menu(df)
+#         print("Final Selections:", selections)
+#         make_selection_menu(df)
 
-    add_button = widgets.Button(description="Add Selection")
-    clear_button = widgets.Button(description="Clear Variable")
-    finish_button = widgets.Button(description="Done")
+#     add_button = widgets.Button(description="Add Selection")
+#     clear_button = widgets.Button(description="Clear Variable")
+#     finish_button = widgets.Button(description="Done")
 
-    add_button.on_click(add_selection)
-    clear_button.on_click(clear)
-    finish_button.on_click(finish)
+#     add_button.on_click(add_selection)
+#     clear_button.on_click(clear)
+#     finish_button.on_click(finish)
 
-    display(add_button, clear_button, finish_button)
+#     display(add_button, clear_button, finish_button)
 
 
-# ## used for testing
+# # ## used for testing
+# # selections = {}
+# # numeric_selections(trial)
+
+# """## Categorical Selection
+
+# """
+
+# # Sample DataFrame
+# # df = trial
+
+# # # Global list to store selections
 # selections = {}
-# numeric_selections(trial)
-
-"""## Categorical Selection
-
-"""
-
-# Sample DataFrame
-# df = trial
-
-# # Global list to store selections
-selections = {}
-
-
-def categorical_selections(df: pd.DataFrame, categorical_attributes=None):
-    global selections
-
-    if categorical_attributes is None:
-        categorical_attributes = df.select_dtypes(exclude=[np.number]).columns.tolist()
-
-    temp_multiselection_holder = None
-
-    def create_attribute_dropdown():
-        return widgets.Dropdown(
-            options=categorical_attributes,
-            value=categorical_attributes[0],
-            description="Variable:",
-            disabled=False,
-        )
-
-    def create_value_selection(attribute):
-        unique_values = sorted(df[attribute].unique())
-
-        return widgets.SelectMultiple(
-            options=unique_values,
-            value=(),
-            description=f"{attribute} Values:",
-            disabled=False,
-            rows=min(5, len(unique_values)),
-            layout=Layout(width="70%", height="400px"),
-            style={"font-size": "40px"},
-        )
-
-    def display_current_value(attribute, values):
-        print(f"Current {attribute} values: {list(values)}")
 
-        global temp_multiselection_holder
-        temp_multiselection_holder = values
-
-    def update_and_display(attribute):
-        value_selection = create_value_selection(attribute)
-        widgets.interact(
-            display_current_value,
-            attribute=widgets.fixed(attribute),
-            values=value_selection,
-        )
-
-    attribute_dropdown = create_attribute_dropdown()
-    range_show = widgets.interactive(update_and_display, attribute=attribute_dropdown)
-
-    display(range_show)
 
-    def select_all(button):
-        print("--" * 20)
+# def categorical_selections(df: pd.DataFrame, categorical_attributes=None):
+#     global selections
+
+#     if categorical_attributes is None:
+#         categorical_attributes = df.select_dtypes(exclude=[np.number]).columns.tolist()
+
+#     temp_multiselection_holder = None
+
+#     def create_attribute_dropdown():
+#         return widgets.Dropdown(
+#             options=categorical_attributes,
+#             value=categorical_attributes[0],
+#             description="Variable:",
+#             disabled=False,
+#         )
+
+#     def create_value_selection(attribute):
+#         unique_values = sorted(df[attribute].unique())
+
+#         return widgets.SelectMultiple(
+#             options=unique_values,
+#             value=(),
+#             description=f"{attribute} Values:",
+#             disabled=False,
+#             rows=min(5, len(unique_values)),
+#             layout=Layout(width="70%", height="400px"),
+#             style={"font-size": "40px"},
+#         )
+
+#     def display_current_value(attribute, values):
+#         print(f"Current {attribute} values: {list(values)}")
+
+#         global temp_multiselection_holder
+#         temp_multiselection_holder = values
+
+#     def update_and_display(attribute):
+#         value_selection = create_value_selection(attribute)
+#         widgets.interact(
+#             display_current_value,
+#             attribute=widgets.fixed(attribute),
+#             values=value_selection,
+#         )
+
+#     attribute_dropdown = create_attribute_dropdown()
+#     range_show = widgets.interactive(update_and_display, attribute=attribute_dropdown)
+
+#     display(range_show)
+
+#     def select_all(button):
+#         print("--" * 20)
+
+#         selected_attribute = attribute_dropdown.value
+#         selections[selected_attribute] = list(
+#             create_value_selection(selected_attribute).options
+#         )
+
+#         print(f"All values selected for {selected_attribute}")
+#         print(f"Current Selection:{selections}")
 
-        selected_attribute = attribute_dropdown.value
-        selections[selected_attribute] = list(
-            create_value_selection(selected_attribute).options
-        )
+#     def deselect_all(button):
+#         print("--" * 20)
+#         selected_attribute = attribute_dropdown.value
+#         selections.pop(selected_attribute, None)
+#         # if selections is None:
+#         #     selections = {}
+
+#         print(f"All values deselected for {selected_attribute}")
+#         print(f"Current Selection:{selections}")
+
+#     def add_selection(button):
+#         global selections, temp_multiselection_holder
+#         print("--" * 20)
+#         selected_attribute, selected_values = attribute_dropdown.value, list(
+#             temp_multiselection_holder
+#         )
+
+#         if not selected_values:
+#             print("Nothing selected")
+#             print(f"Current Selection:{selections}")
+#             return
 
-        print(f"All values selected for {selected_attribute}")
-        print(f"Current Selection:{selections}")
+#         if selected_attribute in selections:
+#             changes = [
+#                 value
+#                 for value in selected_values
+#                 if value not in selections[selected_attribute]
+#             ]
+#             selections[selected_attribute].extend()
 
-    def deselect_all(button):
-        print("--" * 20)
-        selected_attribute = attribute_dropdown.value
-        selections.pop(selected_attribute, None)
-        # if selections is None:
-        #     selections = {}
+#             print(f"Selection added: {selected_attribute} - {changes}")
+#         else:
+#             print(f"Selection added: {selected_attribute} - {selected_values}")
+#             selections[selected_attribute] = selected_values
+#         print(f"Current Selection:{selections}")
 
-        print(f"All values deselected for {selected_attribute}")
-        print(f"Current Selection:{selections}")
+#     def finish(button):
+#         # global selections
+#         print("--" * 20)
+#         print("Final Selections:", selections)
+#         make_selection_menu(df)
 
-    def add_selection(button):
-        global selections, temp_multiselection_holder
-        print("--" * 20)
-        selected_attribute, selected_values = attribute_dropdown.value, list(
-            temp_multiselection_holder
-        )
+#     # Create buttons
+#     select_all_button = widgets.Button(description="Select All")
+#     deselect_all_button = widgets.Button(description="Deselect All")
+#     add_button = widgets.Button(description="Add Selection")
+#     finish_button = widgets.Button(description="Done")
 
-        if not selected_values:
-            print("Nothing selected")
-            print(f"Current Selection:{selections}")
-            return
+#     select_all_button.on_click(select_all)
+#     deselect_all_button.on_click(deselect_all)
+#     add_button.on_click(add_selection)
+#     finish_button.on_click(finish)
 
-        if selected_attribute in selections:
-            changes = [
-                value
-                for value in selected_values
-                if value not in selections[selected_attribute]
-            ]
-            selections[selected_attribute].extend()
+#     display(select_all_button, deselect_all_button, add_button, finish_button)
 
-            print(f"Selection added: {selected_attribute} - {changes}")
-        else:
-            print(f"Selection added: {selected_attribute} - {selected_values}")
-            selections[selected_attribute] = selected_values
-        print(f"Current Selection:{selections}")
 
-    def finish(button):
-        # global selections
-        print("--" * 20)
-        print("Final Selections:", selections)
-        make_selection_menu(df)
+# # ## for testing
+# # selections = {}
+# # categorical_selections(trial)
 
-    # Create buttons
-    select_all_button = widgets.Button(description="Select All")
-    deselect_all_button = widgets.Button(description="Deselect All")
-    add_button = widgets.Button(description="Add Selection")
-    finish_button = widgets.Button(description="Done")
+# """## Deleting Selections"""
 
-    select_all_button.on_click(select_all)
-    deselect_all_button.on_click(deselect_all)
-    add_button.on_click(add_selection)
-    finish_button.on_click(finish)
+# # Sample dictionary
+# # selections = {'Option 1': 'Description 1', 'Option 2': 'Description 2', 'Option 3': 'Description 3'}
+# # selection1 = copy.deepcopy(selections)
 
-    display(select_all_button, deselect_all_button, add_button, finish_button)
 
+# def delete_selections(df: pd.DataFrame):
+#     global selections
+#     delete_columns = []
 
-# ## for testing
-# selections = {}
-# categorical_selections(trial)
-
-"""## Deleting Selections"""
-
-# Sample dictionary
-# selections = {'Option 1': 'Description 1', 'Option 2': 'Description 2', 'Option 3': 'Description 3'}
-# selection1 = copy.deepcopy(selections)
-
-
-def delete_selections(df: pd.DataFrame):
-    global selections
-    delete_columns = []
-
-    print(
-        "Current Selection:",
-        *(f"{attribute}: {value}" for attribute, value in selections.items()),
-        sep="\n",
-    )
-
-    checkboxes = [
-        widgets.Checkbox(description=str(key), value=False) for key in selections
-    ]
-
-    def handle_checkbox_change(change):
-        global delete_columns
-
-        selected_options = [
-            checkbox.description for checkbox in checkboxes if checkbox.value
-        ]
-
-        print(f"Selected Options: {selected_options}")
-
-        delete_columns = selected_options
-
-    for checkbox in checkboxes:
-        checkbox.observe(handle_checkbox_change, names="value")
-
-    display(*checkboxes)
-
-    def delete(button):
-        global delete_columns
-        if not delete_columns:
-            print("Nothing chosen")
-            return
-
-        for attribute in delete_columns:
-            print("Delete: ", attribute)
-            print("Its values are: ", selections[attribute])
-            selections.pop(attribute)
-
-        print("--" * 20)
-        print(f"After delete, The remaining :")
-        for attribute, value in selections.items():
-            print(f"{attribute}: {value}")
-
-        make_selection_menu(df)
-
-    def cancel(button):
-        print("Cancelled deletion")
-
-        make_selection_menu(df)
-
-    delete_button = widgets.Button(description="Delete")
-    delete_button.on_click(delete)
-    cancel_button = widgets.Button(description="Cancel")
-    cancel_button.on_click(cancel)
-
-    display(delete_button, cancel_button)
-
-
-"""## Search Box"""
-
-from ipywidgets import interact, widgets, Layout
-import pandas as pd
-
-
-def create_ui(df, categorical_attributes):
-    search_text = ""
-    selected_category = categorical_attributes[0]
-
-    def get_filtered_values(search_text, selected_category):
-        if search_text:
-            return [
-                value
-                for value in df[selected_category].unique()
-                if search_text.lower() in str(value).lower()
-            ]
-        else:
-            return df[selected_category].unique().tolist()
-
-    value_selection = widgets.SelectMultiple(
-        options=sorted(get_filtered_values(search_text, selected_category)),
-        value=(),
-        description="Values:",
-        disabled=False,
-        rows=min(5, len(get_filtered_values(search_text, selected_category))),
-        layout=Layout(width="70%", height="300px"),
-        style={"font-size": "40px"},
-    )
-
-    def update_value_selection():
-        nonlocal search_text, selected_category
-        filtered_values = get_filtered_values(search_text, selected_category)
-        value_selection.options = sorted(filtered_values)
-        value_selection.rows = min(5, len(filtered_values))
-        value_selection.value = ()  # tuple(filtered_values)
-
-    @interact(
-        category=widgets.Dropdown(
-            options=categorical_attributes,
-            value=selected_category,
-            description="Variable:",
-        ),
-        search=widgets.Text(value="", placeholder="Search..."),
-    )
-    def update(category, search):
-        nonlocal search_text, selected_category
-        search_text = search
-        selected_category = category
-        update_value_selection()
-
-    @interact(
-        values=value_selection
-    )  # widgets.SelectMultiple(options=[], value=(), description='Values:', rows=5, layout=Layout(width='70%', height='300px')))
-    # This should be the value selection
-    def show_values(values):
-        nonlocal selected_category
-        # if len(values) != len(df[selected_category].unique()):
-        print("Current Selection:", selected_category, values)
-        # else:
-        #   print("Selecting all(Default)")
-
-    select_all_button = widgets.Button(description="Select All")
-    deselect_all_button = widgets.Button(description="Deselect All")
-    add_button = widgets.Button(description="Add Selection")
-    done_button = widgets.Button(description="Done")
-
-    def select_all(button):
-        print("--" * 20)
-        global selections
-        global df
-        selected_attribute = selected_category
-        all_values = value_selection.options
-        selections[selected_attribute] = list(all_values)
-        print(f"All filtered values selected for {selected_attribute}")
-        print(f"Current Selection:{selections}")
-
-    def deselect_all(button):
-        print("--" * 20)
-        global selections
-        selected_attribute = selected_category
-        if selected_attribute in selections:
-            selections.pop(selected_attribute)
-            if not selections:
-                selections = {}
-        print(f"All values deselected for {selected_attribute}")
-        print(f"Current Selection:{selections}")
-
-    def add_selection(button):
-        global selections
-        print("--" * 20)
-        selected_attribute = selected_category
-        selected_values = list(value_selection.value)
-        if not selected_values:
-            print("Nothing selected")
-            print(f"Current Selection:{selections}")
-            return
-        if selected_attribute in selections:
-            old = selections[selected_attribute]
-            changes = [value for value in selected_values if value not in old]
-            if changes:
-                selections[selected_attribute].extend(changes)
-                print(f"Selection added: {selected_attribute} - {changes}")
-            else:
-                print("Nothing added")
-        else:
-            print(f"Selection added: {selected_attribute} - {selected_values}")
-            selections[selected_attribute] = selected_values
-        print(f"Current Selection:{selections}")
-
-    def done(button):
-        global selections
-        print("Final Selections:")
-        print(selections)
-        make_selection_menu(df)
-
-    # Set button click actions
-    select_all_button.on_click(select_all)
-    deselect_all_button.on_click(deselect_all)
-    add_button.on_click(add_selection)
-    done_button.on_click(done)
-
-    # Display the widgets
-    display(select_all_button)
-    display(deselect_all_button)
-    display(add_button)
-    display(done_button)
-
-
-# Example usage:
-# categorical_attributes = ['FAMUNIT', 'RELATE', 'RELATED', 'SEX', "YRIMMIG", 'OCCSCORE', "EDSCOR50",
-#                            'MARST', 'RACE', 'RACED', 'HISPAN', 'HISPAND', 'BPL', 'BPLD',
-#                            'MBPL', 'MBPLD', 'FBPL', 'FBPLD', 'NATIVITY', 'CITIZEN',
-#                            'SCHOOL', 'LIT', 'EMPSTAT', 'EMPSTATD', 'LABFORCE',
-#                            'OCC1950', 'IND1950', 'INCWAGE', 'PRESGL']
-
-# selections = {}
-# your_dataframe = pd.DataFrame()  # Replace with your actual DataFrame
-# create_ui(trial, categorical_attributes)
-
-"""# Step 5: Run "Filter and Describe" components
----> Terminally: Want this(keep the df) or Not(Get the original df)
----> Output: A dataframe
-
-## Filter
-"""
-
-
-# sample_selection = {'SEX': ['Male'], 'RACE': ['White'], 'BPL': ['Alabama', 'Georgia']}
-def filter_dataframe(dataframe: pd.DataFrame, selection: dict) -> pd.DataFrame:
-    filtered_df = dataframe.copy()  # Start with a copy of the original DataFrame
-
-    for attribute, values in selection.items():
-        if attribute is categorical_attributes and all(
-            isinstance(v, list) for v in values
-        ):
-            filter_condition = pd.Series(False, index=filtered_df.index)
-            for range in values:
-                start, end = range
-
-                filter_condition |= (filtered_df[attribute] >= start) & (
-                    filtered_df[attribute] <= end
-                )
-            filtered_df = filtered_df[filter_condition]
-        else:
-            filtered_df = filtered_df[filtered_df[attribute].isin(values)]
-
-    return filtered_df
-
-
-# filtered_df = filter_dataframe(trial, {"YEAR": [[1850, 1866], [1926, 1940]]})
-# filtered_df["YEAR"].value_counts()
-
-# # Use value_counts to check the filter for each column
-# for column in filtered_df.columns:
-#     # display(filtered_df[column].value_counts())
-#     display(filtered_df[column].value_counts().to_frame())
-# asds
-
-"""## First few lines"""
-
-
-def head_exception(df: pd.DataFrame):
-    try:
-        first_k_lines = int(input("How many lines do you want to check? "))
-        display(df.head(int(first_k_lines)))
-    except ValueError:
-        print("Invalid number")
-    except Exception as e:
-        print("An error occurred:", e)
-    finally:
-        print("--" * 20)
-
-
-# head_exception(df)
-
-"""## Summary Statistics"""
-
-
-def summary_statistics(df: pd.DataFrame):
-    print("Numeric Attribtues are:")
-    print(numerical_attributes)
-
-    print("--" * 20)
-    print("Summary statistics:")
-
-    pd.options.display.float_format = "{:,.0f}".format
-
-    summary_df = df[numerical_attributes].describe().transpose()
-
-    display(summary_df)
-
-
-# summary_statistics(df)
-
-"""## Count table"""
-
-
-def download_excel(table: pd.DataFrame):
-    table.to_excel("Frequency Table.xlsx", index=True)
-    files.download("Frequency Table.xlsx")
-
-
-def save_and_download_dataframes(dataframes: list[pd.DataFrame], folder_name="output"):
-    # Create the folder if it doesn't exist
-    os.makedirs(folder_name, exist_ok=True)
-
-    for i, df in enumerate(dataframes):
-        file_path = os.path.join(folder_name, f"data_{i + 1}.xlsx")
-        df.to_excel(file_path, index=True)
-        print(f"Table {i + 1} saved to: {file_path}")
-
-    # Create a zip file containing all Excel files
-    zip_path = f"{folder_name}.zip"
-    os.system(f"zip -r {zip_path} {folder_name}")
-
-    # Download the zip file
-    files.download(zip_path)
-
-
-def count_table(filtered_df: pd.DataFrame, selections: dict):
-    columns = selections.keys()
-    count_tables = []
-
-    def create_count_table(pair):
-        count_table = filtered_df.groupby(list(pair)).size().unstack(fill_value=0)
-        count_table["Total"] = count_table.sum(axis=1)
-        count_table.loc["Total"] = count_table.sum(axis=0)
-        count_table.at["Total", "Total"] = count_table.values.sum()
-
-        count_table = count_table.astype(int)
-
-        for attribute, values in selections.items():
-            if not values or attribute not in pair:
-                continue
-
-            for value_range in values:
-                if type(value_range) in (tuple, list):
-                    start, end = value_range
-                    for value in range(start, end + 1):
-                        if value not in count_table.index:
-                            count_table.loc[value] = "NaN"
-                        if value not in count_table.columns:
-                            count_table[value] = "NaN"
-                else:
-                    value = value_range
-                    if value not in count_table.index:
-                        count_table.loc[value] = "NaN"
-                    if value not in count_table.columns:
-                        count_table[value] = "NaN"
-
-        return count_table
-
-    if len(columns) > 1:
-        # Display subsets of DataFrame for each combination of columns
-        for pair in itertools.combinations(columns, 2):
-            count_table = create_count_table(pair)
-            display(count_table)
-            count_tables.append(count_table)
-
-        download_button = widgets.Button(description="Download")
-        # download_button.on_click(lambda x: save_and_download_dataframes(count_tables))
-        download_button.on_click(lambda x: download_excel(count_table))
-        display(download_button)
-    elif len(columns) == 1:
-        for column, values in selections.items():
-            value_counts_table = filtered_df[column].value_counts().reset_index()
-            value_counts_table.columns = [column, "Count"]
-
-            for value in values:
-                if value not in value_counts_table[column].values:
-                    value_counts_table = value_counts_table.append(
-                        {column: value, "Count": "NaN"}, ignore_index=True
-                    )
-
-            download_button = widgets.Button(description="Download Table")
-            download_button.on_click(lambda x: download_excel(value_counts_table))
-
-            display(value_counts_table, download_button)
-    else:
-        print("Nothing selected")
-
-
-class ClientStateMachine:
-    def __init__(self):
-        self.STATES = {
-            "State Choosing": 0,
-            "Make Selection": 1,
-            "Describe Selection": 2,
-            "Plot Selection": 3,
-        }
-        self.state = self.STATES["State Choosing"]
-
-    def get_state(self) -> int:
-        return self.state
-
-    def set_state(self, state: str):
-        if state in self.STATES:
-            self.state = self.STATES[state]
-        else:
-            raise ValueError(f"Invalid state: {state}")
-
-
-"""# Step 6: Run Plotting Functions"""
-
-
-class FilterOptionWidget(widgets.HBox):
-    def __init__(self, filter_data=None, parent=None, grouping_list=None):
-        super().__init__()
-
-        self.parent = parent
-        self.filter_data = filter_data if filter_data else []
-        self.grouping_list = grouping_list if grouping_list else []
-
-        filter_info = widgets.Label(value=str(self.filter_data))
-
-        delete_button = widgets.Button(icon="times", button_style="danger")
-        delete_button.on_click(self.on_delete_button_clicked)
-
-        self.children = (
-            widgets.Box(
-                [delete_button, filter_info],
-                layout=widgets.Layout(
-                    border="2px solid #888", padding="10px", border_radius="10px"
-                ),
-            ),
-        )
-
-        self.parent.children = self.parent.children + (self,)
-
-    def on_delete_button_clicked(self, button):
-        self.close()
-
-    def close(self):
-        self.remove_grouping()
-        self.update_ui()
-
-    def remove_grouping(self):
-        try:
-            grouping_variable, grouping_values = self.filter_data
-            self.grouping_list.remove((grouping_variable, grouping_values))
-        except ValueError:
-            print(f"Error: Grouping {self.filter_data} not found in grouping list.")
-
-    def update_ui(self):
-        self.parent.children = [
-            child for child in self.parent.children if child is not self
-        ]
-
-
-grouping_list = []
-
-
-def x_y_boxplot(x: str, y: str, df=data, groups=None, grouping_type="sum") -> go.Figure:
-    """
-    Generate a boxplot with the x-axis as a categorical variable and y-axis as a numeric variable.
-
-    Parameters:
-    x (str): Column name for the x-axis (categorical variable).
-    y (str): Column name for the y-axis (numeric variable).
-    df (pd.DataFrame): DataFrame containing the data.
-    groups (list): List of additional groupings (optional).
-    grouping_type (str): Type of grouping to apply (default is "sum").
-
-    Returns:
-    fig: Plotly Figure object.
-    """
-    if groups is None:
-        groups = []
-
-    if not pd.api.types.is_numeric_dtype(df[y]):
-        raise ValueError(f"The y-axis column '{y}' must be numeric.")
-
-    fig = px.box(df, x=x, y=y, title=f"Boxplot of ({y}) by ({x})")
-    return fig
-
-
-def x_boxplot(
-    x: str, df: pd.DataFrame, groups: list = None, grouping_type="sum"
-) -> go.Figure:
-    """
-    Generate a boxplot with the x-axis as a categorical variable.
-
-    Parameters:
-    x (str): Column name for the y-axis (categorical variable).
-    df (pd.DataFrame): DataFrame containing the data.
-    groups (list): List of tuples for additional groupings (optional).
-    grouping_type (str): Type of grouping to apply (default is "sum").
-
-    Returns:
-    go.Figure: Plotly Figure object.
-    """
-    if groups is None:
-        groups = []
-
-    print(f"grouping type: {grouping_type}")
-    if len(groups) > 0:
-        fig = go.Figure()
-
-        for column, values in groups:
-            subset = filter_subset(df, [(column, values)])
-            fig.add_trace(
-                go.Box(y=subset[x], name=f"Boxplot of ({x}) for {column}={values}")
-            )
-            fig.update_xaxes(showticklabels=False)
-            fig.update_layout(yaxis_title=x, title=f"Boxplot of {x} by groups")
-    else:
-        fig = px.box(df, y=x, title=f"Boxplot of ({x})")
-
-    return fig
-
-
-def x_y_scatter(x: str, y: str, df: pd.DataFrame, groups: list = None) -> go.Figure:
-    """
-    Generate a scatter plot with the x-axis and y-axis as numeric variables.
-
-    Parameters:
-    x (str): Column name for the x-axis (numeric variable).
-    y (str): Column name for the y-axis (numeric variable).
-    df (pd.DataFrame): DataFrame containing the data.
-
-    Returns:
-    px.scatter: Plotly scatter plot figure.
-    """
-    if df is None:
-        raise ValueError("The input DataFrame is empty.")
-
-    if groups is None:
-        groups = []
-
-    if not pd.api.types.is_numeric_dtype(df[x]):
-        raise ValueError(f"The x-axis column '{x}' must be numeric.")
-    if not pd.api.types.is_numeric_dtype(df[y]):
-        raise ValueError(f"The y-axis column '{y}' must be numeric.")
-
-    # TODO: add grouping
-
-    fig = px.scatter(df, x=x, y=y, title=f"Scatter plot of ({y}) by ({x})")
-    fig.update_traces(hoverinfo="skip", hovertemplate=None)
-
-    return fig
-
-
-# fig3 = x_y_scatter(x = "EDSCOR50",y ="INCWAGE",df = data)
-# fig3.show()
-
-
-# This only plot, only one plot, the segment of data is about the filtering
-def x_y_stacked(x: str, y: str, df: pd.DataFrame) -> go.Figure:
-    """
-    Generate a stacked bar plot with the x-axis as a categorical variable
-    and y-axis as a categorical variable showing proportions.
-
-    :param x: Column name for the x-axis (categorical variable).
-    :param y: Column name for the y-axis (categorical variable).
-    :param df: DataFrame containing the data.
-
-    :return: px.Bar instance
-    """
-    if df is None:
-        raise ValueError("The input DataFrame is empty.")
-
-    if not isinstance(df[x], pd.CategoricalDtype):
-        raise ValueError(f"The x-axis column '{x}' must be categorical.")
-    if not isinstance(df[y], pd.CategoricalDtype):
-        raise ValueError(f"The y-axis column '{y}' must be categorical.")
-
-    counts = df.groupby([x, y]).size().unstack(fill_value=0)
-
-    # Normalize the counts to get proportions
-    proportions = counts.div(counts.sum(axis=1), axis=0) * 100
-    # Reshape the DataFrame for Plotly
-    proportions.reset_index(inplace=True)
-    proportions_melted = pd.melt(
-        proportions, id_vars=[x], var_name=y, value_name="Percentage"
-    )
-
-    # Plot using Plotly Express
-    fig = px.bar(
-        proportions_melted,
-        x=x,
-        y="Percentage",
-        color=y,  # Color represents the stacked bars
-        barmode="stack",
-        labels={"Percentage": "Proportion (%)"},
-        title=f"Stacked Bar Plot of ({y}) Proportions for different ({x})",
-        hover_name=y,
-        hover_data={"Percentage": ":.2f%"},
-    )
-
-    return fig
-
-
-# fig1 = x_y_stacked(x = "SEX", y = "RACE", df= data)
-# fig1.show()
-
-from typing import *
-import pandas as pd
-import plotly.express as px
-import plotly.graph_objects as go
-from functools import reduce
-
-
-def and_filter_subset(
-    subset: pd.DataFrame, filter_list: Dict[str, Union[tuple, list, str]] | tuple | list
-) -> pd.DataFrame:
-    print(f"And filter subset list: {filter_list}")
-
-    if not filter_list:
-        return subset
-    filter_conditions = [
-        (
-            subset[column].isin(value)
-            if isinstance(value, (list, tuple))
-            else subset[column] == value
-        )
-        for column, value in (
-            filter_list.items() if isinstance(filter_list, dict) else filter_list
-        )
-    ]
-    combined_condition = reduce(lambda x, y: x | y, filter_conditions)
-    return subset[combined_condition]
-
-
-def filter_subset(
-    subset: pd.DataFrame, filter_list: Dict[str, Union[tuple, list, str]] | tuple | list
-) -> pd.DataFrame:
-    print(f"Filter subset list: {filter_list}")
-
-    if subset is None:
-        raise ValueError("The input DataFrame is None.")
-    for column, value in (
-        filter_list.items() if isinstance(filter_list, dict) else filter_list
-    ):
-        subset = subset[
-            (
-                subset[column].isin(value)
-                if isinstance(value, (list, tuple))
-                else subset[column] == value
-            )
-        ]
-    return subset
-
-
-def x_stacked(x: str, df: pd.DataFrame) -> go.Figure:
-    if df is None:
-        raise ValueError("The input DataFrame is None.")
-    proportions = df[x].value_counts(normalize=True).reset_index()
-    proportions.columns = [x, "Proportion"]
-    proportions["Proportion"] *= 100
-
-    fig = go.Figure(
-        data=[
-            go.Bar(
-                x=proportions[x],
-                y=proportions["Proportion"],
-                text=proportions["Proportion"],
-                textposition="auto",
-            )
-        ]
-    )
-
-    fig.update_layout(
-        title=f"Stacked Bar Plot of ({x}) Proportions",
-        xaxis_title=x,
-        yaxis_title="Proportion (%)",
-        barmode="stack",
-    )
-
-    return fig
-
-
-def plot_generic_data(
-    plot_func,
-    x: str,
-    y: str,
-    df: pd.DataFrame,
-    groups: List[Tuple[str, list]] | None = None,
-    grouping_type: str = "sum",
-) -> go.Figure:
-    if groups is None:
-        groups = []
-
-    def get_grouped_data(subset: pd.DataFrame) -> pd.Series:
-        if grouping_type == "count":
-            return subset.groupby(x)[x].count()
-        elif y not in numerical_attributes:
-            if grouping_type in ("sum", "cluster sum"):
-                return subset.groupby(x)[y].size()
-            elif grouping_type in ("avg", "cluster avg"):
-                grouped_data = subset.groupby(x)[y].agg(["count", "nunique"])
-                return grouped_data["count"] / grouped_data["nunique"]
-        elif grouping_type in ("sum", "cluster sum"):
-            return subset.groupby(x)[y].sum()
-        elif grouping_type in ("avg", "cluster avg"):
-            return subset.groupby(x)[y].mean()
-
-        return pd.Series()
-
-    fig = go.Figure()
-    fig.update_layout(
-        xaxis_title=x, yaxis_title=y, title=f"{grouping_type} of {y} by {x}"
-    )
-
-    if not groups:
-        grouped_data = get_grouped_data(df)
-        plot_func(grouped_data, fig)
-    else:
-        if grouping_type in ["sum", "avg"]:
-            subset = and_filter_subset(df, groups)
-            grouped_data = get_grouped_data(subset)
-            plot_func(grouped_data, fig, group_name=f"{grouping_type} of {y} by {x}")
-        else:
-            for column, values in groups:
-                subset = filter_subset(df, {column: values})
-                grouped_data = get_grouped_data(subset)
-                plot_func(grouped_data, fig, group_name=f"{column}={values}")
-
-    return fig
-
-
-def plot_line_data(
-    x: str,
-    y: str,
-    df: pd.DataFrame,
-    groups: List[Tuple[str, list]] | None = None,
-    grouping_type: str = "sum",
-) -> go.Figure:
-    def line_plot(data, fig, group_name=None):
-        fig.add_trace(
-            go.Scatter(x=data.index, y=data.values, mode="lines", name=group_name)
-        )
-
-    return plot_generic_data(line_plot, x, y, df, groups, grouping_type)
-
-
-def plot_area_data(
-    x: str,
-    y: str,
-    df: pd.DataFrame,
-    groups: List[Tuple[str, list]] | None = None,
-    grouping_type: str = "sum",
-) -> go.Figure:
-    def area_plot(data, fig, group_name=None):
-        fig.add_trace(
-            go.Scatter(x=data.index, y=data.values, fill="tozeroy", name=group_name)
-        )
-
-    return plot_generic_data(area_plot, x, y, df, groups, grouping_type)
-
-
-def plot_clustered_bar_data(
-    x: str,
-    y: str,
-    df: pd.DataFrame,
-    groups: List[Tuple[str, list]] | None = None,
-    grouping_type: str = "sum",
-) -> go.Figure:
-    labels = dict(index=x, value=f"{grouping_type} of {y} by {x}", barmode="group")
-
-    def get_grouped_data(subset):
-        if grouping_type == "count":
-            return subset.groupby(x)[x].count()
-        else:
-            if y not in numerical_attributes:
-                if grouping_type in ("sum", "cluster sum"):
-                    return subset.groupby(x)[y].size()
-                elif grouping_type in ("avg", "cluster avg"):
-                    grouped_data = subset.groupby(x)[y].agg(["count", "nunique"])
-                    return grouped_data["count"] / grouped_data["nunique"]
-            if grouping_type in ("sum", "cluster sum"):
-                return subset.groupby(x)[y].sum()
-            elif grouping_type in ("avg", "cluster avg"):
-                return subset.groupby(x)[y].mean()
-
-    fig = px.bar()
-    fig.update_layout(
-        xaxis_title=x, yaxis_title=y, title=labels["value"], barmode="group"
-    )
-
-    if len(groups) == 0:
-        grouped_data = get_grouped_data(df)
-        print(grouped_data)
-        fig = px.bar(grouped_data, title=labels["value"], labels=labels)
-    else:
-        if grouping_type in ["sum", "avg"]:
-            subset = and_filter_subset(df, groups)
-            grouped_data = get_grouped_data(subset)
-            print(grouped_data)
-            fig = px.bar(grouped_data, title=labels["value"], labels=labels)
-        else:
-            for column, values in groups:
-                subset = filter_subset(df, [(column, values)])
-                grouped_data = get_grouped_data(subset)
-
-                fig.add_bar(
-                    x=grouped_data.index,
-                    y=grouped_data.values,
-                    name=f"{column}={values}",
-                )
-
-    return fig
-
-
-def plot_clustered_percentage_bar_data(
-    x: str,
-    y: str,
-    df: pd.DataFrame,
-    groups: List[Tuple[str, list]] | None = None,
-    grouping_type: str = "sum",
-) -> go.Figure:
-    labels = dict(index=x, value=f"Percentage of {y} by {x}", barmode="group")
-
-    if groups is None:
-        groups = []
-
-    def get_grouped_data(subset):
-        if grouping_type == "count":
-            return (
-                subset.groupby(x)[x].value_counts(normalize=True).unstack(fill_value=0)
-                * 100
-            )
-        else:
-            return (
-                subset.groupby(x)[y].value_counts(normalize=True).unstack(fill_value=0)
-                * 100
-            )
-
-    fig = px.bar()
-    fig.update_layout(
-        xaxis_title=x,
-        yaxis_title=f"Percentage of {y}",
-        title=labels["value"],
-        barmode="relative" if grouping_type in ["sum", "avg"] else "overlay",
-    )
-
-    if len(groups) == 0:
-        grouped_data = get_grouped_data(df)
-        fig = px.bar(grouped_data, title=labels["value"], labels=labels)
-    else:
-        if grouping_type in ["sum", "avg"]:
-            subset = and_filter_subset(df, groups)
-            grouped_data = get_grouped_data(subset)
-
-            fig = px.bar(grouped_data, title=labels["value"], labels=labels)
-        else:
-            for column, values in groups:
-                subset = filter_subset(df, [(column, values)])
-                grouped_data = get_grouped_data(subset)
-
-                fig.add_bar(
-                    x=grouped_data.index,
-                    y=grouped_data.values.flatten(),
-                    name=f"{column}={values}",
-                )
-
-    return fig
-
-
-def render_graph(
-    data: pd.DataFrame,
-    kind: str,
-    x_axis: str = "YEAR",
-    y_axis: str = "Count",
-    groups: List[Tuple[str, list]] | None = None,
-    grouping_type: str | None = None,
-    year_range: Tuple[int, int] | None = None,
-    top_k: int = 0,
-    filter_list: Dict[str, Union[list, tuple, str]] | None = None,
-) -> go.Figure:
-    if filter_list is None:
-        filter_list = {}
-    if groups is None:
-        groups = []
-    subset = data
-    if filter_list:
-        subset = filter_subset(subset, filter_list)
-    if year_range:
-        subset = subset[
-            subset["YEAR"].between(year_range[0], year_range[1], inclusive="both")
-        ]
-
-    plot_func_map = {
-        "line": plot_line_data,
-        "area": plot_area_data,
-        "scatter": lambda x, y, df, groups, *args: x_y_scatter(
-            x=x, y=y, df=df, groups=groups
-        ),
-        "box": lambda x, y, df, groups, *args: x_boxplot(x=x, df=subset, groups=groups),
-        "grouped bar": plot_clustered_bar_data,
-        "stacked bar": plot_clustered_percentage_bar_data,
-    }
-
-    fig = plot_func_map.get(kind, lambda *args: None)(
-        x_axis, y_axis, subset, groups, grouping_type
-    )
-
-    if fig:
-        fig.update_layout(legend=dict(orientation="h"))
-
-    return fig
-
-
-from typing import *
-import pandas as pd
-import plotly.graph_objects as go
-import plotly.express as px
-import ipywidgets as widgets
-from functools import reduce
-
-
-def plotting(data, filter_list):
-    global grouping_list
-
-    output_widget = widgets.Output()
-    style = {"description_width": "initial"}
-    grouping_list = []
-    group_filter_container = widgets.VBox()
-
-    plot_type = widgets.Dropdown(
-        options=["line", "box", "area", "scatter", "stacked bar", "grouped bar"],
-        value="line",
-        description="Plot type:",
-    )
-
-    x_axis = widgets.Dropdown(options=options_list, description="X-Axis:", style=style)
-    y_axis = widgets.Dropdown(options=options_list, description="Y-Axis:", style=style)
-
-    if plot_type.value in ("box", "stacked bar"):
-        y_axis.layout.visibility = "hidden"
-
-    grouping_variable = widgets.Dropdown(
-        options=options_list, description="Group variable:", style=style
-    )
-    grouping_variable_options = option_value_dictionary
-
-    grouping_variable_values = widgets.SelectMultiple(
-        options=[],
-        description="Values:",
-        style=style,
-    )
-    grouping_variable_values.layout.height = "200px"
-    grouping_variable_values.layout.width = "60%"
-
-    grouping_type = widgets.Dropdown(
-        options=["sum", "avg", "cluster sum", "cluster avg", "count"],
-        description="Y-axis functions:",
-        style=style,
-    )
-
-    def update_output(fig):
-        with output_widget:
-            output_widget.clear_output(wait=True)
-            fig.show()
-
-    def update_grouping_options(change):
-        selected_option = change.new
-        if selected_option in grouping_variable_options:
-            second_options = grouping_variable_options[selected_option]
-            grouping_variable_values.options = second_options
-
-    grouping_variable.observe(update_grouping_options, names=["value"])
-
-    def grouping_interaction(button):
-        grouping_list.append((grouping_variable.value, grouping_variable_values.value))
-        filter_widget = FilterOptionWidget(
-            filter_data=(grouping_variable.value, grouping_variable_values.value),
-            parent=group_filter_container,
-            grouping_list=grouping_list,
-        )
-
-    group_button = widgets.Button(
-        description="Group", button_style="success", style=style
-    )
-    group_button.on_click(grouping_interaction)
-
-    def update_plot_type(change):
-        t_plot_type = change.new
-
-        if t_plot_type == "box":
-            x_axis.options = numerical_attributes
-        elif change.old == "box":
-            x_axis.options = options_list
-
-        if t_plot_type == "scatter":
-            y_axis.options = numerical_attributes
-        elif change.old == "scatter":
-            y_axis.options = options_list
-
-        y_axis.layout.visibility = "hidden" if t_plot_type == "box" else "visible"
-        grouping_layout.layout.visibility = (
-            "visible"
-            if t_plot_type in ("box", "area", "line", "grouped bar", "stacked bar")
-            else "hidden"
-        )
-
-        if grouping_layout.layout.visibility == "hidden":
-            grouping_variable_values.value = []
-            for widget in group_filter_container.children:
-                widget.close()
-
-        grouping_type.layout.visibility = (
-            "hidden" if t_plot_type == "box" else "visible"
-        )
-
-    plot_type.observe(update_plot_type, names=["value"])
-
-    make_plot_button = widgets.Button(
-        description="Make plot", button_style="info", style=style
-    )
-    make_plot_button.on_click(
-        lambda x: update_output(
-            render_graph(
-                data,
-                plot_type.value,
-                x_axis.value,
-                y_axis.value,
-                grouping_list,
-                grouping_type.value,
-                filter_list=filter_list,
-            )
-        )
-    )
-
-    done_button = widgets.Button(description="Done", button_style="warning")
-    done_button.on_click(lambda x: main_menu(data))
-
-    selection_layout = widgets.HBox([widgets.Text("Selection")])
-    plotting_layout = widgets.VBox(
-        [
-            widgets.HBox([plot_type, make_plot_button]),
-            widgets.HBox([x_axis]),
-            widgets.HBox([y_axis, done_button]),
-        ]
-    )
-    grouping_layout = widgets.VBox(
-        [
-            widgets.HBox([grouping_variable, group_button]),
-            widgets.HBox([grouping_variable_values, grouping_type]),
-            group_filter_container,
-        ]
-    )
-
-    Layout = widgets.VBox(
-        [
-            selection_layout,
-            plotting_layout,
-            grouping_layout,
-            widgets.HBox([output_widget]),
-        ]
-    )
-    display(Layout)
-
-
-"""# Step 7: Modified Make selection, describe selections"""
-
-
-def main_menu(df: pd.DataFrame):
-    global csm
-    csm.set_state("State Choosing")
-    print("--" * 20)
-    print("This is the main menu, you have the following three things you can do.")
-    print("This is the selection you have made:")
-    for attribute, value in selections.items():
-        print(f"{attribute}: {value}")
-
-    def selection_mode(button):
-        global selections
-        try:
-            chosen = dropdown.value
-            if chosen == "1":
-                make_selection_menu(df)
-            elif chosen == "2":
-                desdcribe_selection_menu(df)
-            elif chosen == "3":
-                plotting(df, selections)
-                # somewhere you input the ploting, you can use filtered_df as "df"
-            elif chosen == "4":
-                selections = {}
-                main_menu(df)
-        except:
-            main_menu(df)
-
-    # Dropdown options
-    state_options = {
-        "Make Selection": "1",
-        "Describe Selection": "2",
-        "Plot Selection": "3",
-        "Clear selections": "4",
-    }
-
-    # Create dropdown widgets
-    dropdown = widgets.Dropdown(options=state_options, description="Select mode:")
-
-    # Create buttons
-    finish_button = widgets.Button(description="Choose")
-
-    # Set button click actions
-    finish_button.on_click(selection_mode)
-
-    # Display the dropdown and buttons
-    display(dropdown, finish_button)
-
-
-def make_selection_menu(df: pd.DataFrame):
-    global csm
-    csm.set_state("Make Selection")
-    print("--" * 20)
-    print("You can modify the subset you want to check in this section.")
-    print("Current Selections:")
-    for attribute, value in selections.items():
-        print(f"{attribute}: {value}")
-
-    def selection_mode(button):
-        try:
-            chosen = dropdown.value
-            if chosen == "1":
-                numeric_selections(df)
-            elif chosen == "2":
-                # categorical_selections(df)
-                # categorical_selections_with_search(df)
-                create_ui(df, categorical_attributes)
-            elif chosen == "3":
-                delete_selections(df)
-            elif chosen == "4":
-                main_menu(df)
-        except:
-            make_selection_menu(df)
-
-    # Dropdown options
-    state_options = {
-        "Numeric Variables": "1",
-        "Categorical Variables": "2",
-        "Delete Selections": "3",
-        "Main Menu": "4",
-    }
-
-    # Create dropdown widget
-    dropdown = widgets.Dropdown(options=state_options, description="Select mode:")
-
-    # Create buttons
-    finish_button = widgets.Button(description="Choose")
-
-    # Set button click actions
-    finish_button.on_click(selection_mode)
-
-    # Display the dropdown and buttons
-    display(dropdown, finish_button)
-
-
-def desdcribe_selection_menu(df: pd.DataFrame):
-    global csm
-    csm.set_state("Describe Selection")
-    print("--" * 20)
-    print(
-        "Filtering the dateframe using the following selection, and you can check the filtered dataframe."
-    )
-    print("Selections:")
-
-    for attribute, value in selections.items():
-        print(f"{attribute}: {value}")
-    global filtered_df
-    filtered_df = filter_dataframe(df, selections)
-
-    def selection_mode(button):
-        global filtered_df
-        global selections
-
-        if filtered_df is None:
-            filtered_df = filter_dataframe(df, selections)
-        # try:
-        chosen = dropdown.value
-        if chosen == "1":
-            display(filtered_df.head(10))
-            desdcribe_selection_menu(df)
-        elif chosen == "2":
-            summary_statistics(filtered_df)
-            desdcribe_selection_menu(df)
-        elif chosen == "3":
-            count_table(filtered_df, selections)
-            desdcribe_selection_menu(df)
-        elif chosen == "4":
-            main_menu(df)
-        elif chosen == "5":
-            filtered_df = None
-            selections = {}
-            main_menu(df)
-        # except:
-        #  print("Something wrong, try again.")
-        #  desdcribe_selection_menu(df)
-
-    # Dropdown options
-    state_options = {
-        "First 10 Lines": "1",
-        "Summary statistics": "2",
-        "Frequency Table": "3",
-        "Keep Dataframe": "4",
-        "Discard Dataframe": "5",
-    }
-
-    # Create dropdown widget
-    dropdown = widgets.Dropdown(options=state_options, description="Select mode:")
-
-    # Create buttons
-    finish_button = widgets.Button(description="Choose")
-
-    # Set button click actions
-    finish_button.on_click(selection_mode)
-
-    # Display the dropdown and buttons
-    display(dropdown, finish_button)
+#     print(
+#         "Current Selection:",
+#         *(f"{attribute}: {value}" for attribute, value in selections.items()),
+#         sep="\n",
+#     )
+
+#     checkboxes = [
+#         widgets.Checkbox(description=str(key), value=False) for key in selections
+#     ]
+
+#     def handle_checkbox_change(change):
+#         global delete_columns
+
+#         selected_options = [
+#             checkbox.description for checkbox in checkboxes if checkbox.value
+#         ]
+
+#         print(f"Selected Options: {selected_options}")
+
+#         delete_columns = selected_options
+
+#     for checkbox in checkboxes:
+#         checkbox.observe(handle_checkbox_change, names="value")
+
+#     display(*checkboxes)
+
+#     def delete(button):
+#         global delete_columns
+#         if not delete_columns:
+#             print("Nothing chosen")
+#             return
+
+#         for attribute in delete_columns:
+#             print("Delete: ", attribute)
+#             print("Its values are: ", selections[attribute])
+#             selections.pop(attribute)
+
+#         print("--" * 20)
+#         print(f"After delete, The remaining :")
+#         for attribute, value in selections.items():
+#             print(f"{attribute}: {value}")
+
+#         make_selection_menu(df)
+
+#     def cancel(button):
+#         print("Cancelled deletion")
+
+#         make_selection_menu(df)
+
+#     delete_button = widgets.Button(description="Delete")
+#     delete_button.on_click(delete)
+#     cancel_button = widgets.Button(description="Cancel")
+#     cancel_button.on_click(cancel)
+
+#     display(delete_button, cancel_button)
+
+
+# """## Search Box"""
+
+# from ipywidgets import interact, widgets, Layout
+# import pandas as pd
+
+
+# def create_ui(df, categorical_attributes):
+#     search_text = ""
+#     selected_category = categorical_attributes[0]
+
+#     def get_filtered_values(search_text, selected_category):
+#         if search_text:
+#             return [
+#                 value
+#                 for value in df[selected_category].unique()
+#                 if search_text.lower() in str(value).lower()
+#             ]
+#         else:
+#             return df[selected_category].unique().tolist()
+
+#     value_selection = widgets.SelectMultiple(
+#         options=sorted(get_filtered_values(search_text, selected_category)),
+#         value=(),
+#         description="Values:",
+#         disabled=False,
+#         rows=min(5, len(get_filtered_values(search_text, selected_category))),
+#         layout=Layout(width="70%", height="300px"),
+#         style={"font-size": "40px"},
+#     )
+
+#     def update_value_selection():
+#         nonlocal search_text, selected_category
+#         filtered_values = get_filtered_values(search_text, selected_category)
+#         value_selection.options = sorted(filtered_values)
+#         value_selection.rows = min(5, len(filtered_values))
+#         value_selection.value = ()  # tuple(filtered_values)
+
+#     @interact(
+#         category=widgets.Dropdown(
+#             options=categorical_attributes,
+#             value=selected_category,
+#             description="Variable:",
+#         ),
+#         search=widgets.Text(value="", placeholder="Search..."),
+#     )
+#     def update(category, search):
+#         nonlocal search_text, selected_category
+#         search_text = search
+#         selected_category = category
+#         update_value_selection()
+
+#     @interact(
+#         values=value_selection
+#     )  # widgets.SelectMultiple(options=[], value=(), description='Values:', rows=5, layout=Layout(width='70%', height='300px')))
+#     # This should be the value selection
+#     def show_values(values):
+#         nonlocal selected_category
+#         # if len(values) != len(df[selected_category].unique()):
+#         print("Current Selection:", selected_category, values)
+#         # else:
+#         #   print("Selecting all(Default)")
+
+#     select_all_button = widgets.Button(description="Select All")
+#     deselect_all_button = widgets.Button(description="Deselect All")
+#     add_button = widgets.Button(description="Add Selection")
+#     done_button = widgets.Button(description="Done")
+
+#     def select_all(button):
+#         print("--" * 20)
+#         global selections
+#         global df
+#         selected_attribute = selected_category
+#         all_values = value_selection.options
+#         selections[selected_attribute] = list(all_values)
+#         print(f"All filtered values selected for {selected_attribute}")
+#         print(f"Current Selection:{selections}")
+
+#     def deselect_all(button):
+#         print("--" * 20)
+#         global selections
+#         selected_attribute = selected_category
+#         if selected_attribute in selections:
+#             selections.pop(selected_attribute)
+#             if not selections:
+#                 selections = {}
+#         print(f"All values deselected for {selected_attribute}")
+#         print(f"Current Selection:{selections}")
+
+#     def add_selection(button):
+#         global selections
+#         print("--" * 20)
+#         selected_attribute = selected_category
+#         selected_values = list(value_selection.value)
+#         if not selected_values:
+#             print("Nothing selected")
+#             print(f"Current Selection:{selections}")
+#             return
+#         if selected_attribute in selections:
+#             old = selections[selected_attribute]
+#             changes = [value for value in selected_values if value not in old]
+#             if changes:
+#                 selections[selected_attribute].extend(changes)
+#                 print(f"Selection added: {selected_attribute} - {changes}")
+#             else:
+#                 print("Nothing added")
+#         else:
+#             print(f"Selection added: {selected_attribute} - {selected_values}")
+#             selections[selected_attribute] = selected_values
+#         print(f"Current Selection:{selections}")
+
+#     def done(button):
+#         global selections
+#         print("Final Selections:")
+#         print(selections)
+#         make_selection_menu(df)
+
+#     # Set button click actions
+#     select_all_button.on_click(select_all)
+#     deselect_all_button.on_click(deselect_all)
+#     add_button.on_click(add_selection)
+#     done_button.on_click(done)
+
+#     # Display the widgets
+#     display(select_all_button)
+#     display(deselect_all_button)
+#     display(add_button)
+#     display(done_button)
+
+
+# # Example usage:
+# # categorical_attributes = ['FAMUNIT', 'RELATE', 'RELATED', 'SEX', "YRIMMIG", 'OCCSCORE', "EDSCOR50",
+# #                            'MARST', 'RACE', 'RACED', 'HISPAN', 'HISPAND', 'BPL', 'BPLD',
+# #                            'MBPL', 'MBPLD', 'FBPL', 'FBPLD', 'NATIVITY', 'CITIZEN',
+# #                            'SCHOOL', 'LIT', 'EMPSTAT', 'EMPSTATD', 'LABFORCE',
+# #                            'OCC1950', 'IND1950', 'INCWAGE', 'PRESGL']
+
+# # selections = {}
+# # your_dataframe = pd.DataFrame()  # Replace with your actual DataFrame
+# # create_ui(trial, categorical_attributes)
+
+# """# Step 5: Run "Filter and Describe" components
+# ---> Terminally: Want this(keep the df) or Not(Get the original df)
+# ---> Output: A dataframe
+
+# ## Filter
+# """
+
+
+# # sample_selection = {'SEX': ['Male'], 'RACE': ['White'], 'BPL': ['Alabama', 'Georgia']}
+# def filter_dataframe(dataframe: pd.DataFrame, selection: dict) -> pd.DataFrame:
+#     filtered_df = dataframe.copy()  # Start with a copy of the original DataFrame
+
+#     for attribute, values in selection.items():
+#         if attribute is categorical_attributes and all(
+#             isinstance(v, list) for v in values
+#         ):
+#             filter_condition = pd.Series(False, index=filtered_df.index)
+#             for range in values:
+#                 start, end = range
+
+#                 filter_condition |= (filtered_df[attribute] >= start) & (
+#                     filtered_df[attribute] <= end
+#                 )
+#             filtered_df = filtered_df[filter_condition]
+#         else:
+#             filtered_df = filtered_df[filtered_df[attribute].isin(values)]
+
+#     return filtered_df
+
+
+# # filtered_df = filter_dataframe(trial, {"YEAR": [[1850, 1866], [1926, 1940]]})
+# # filtered_df["YEAR"].value_counts()
+
+# # # Use value_counts to check the filter for each column
+# # for column in filtered_df.columns:
+# #     # display(filtered_df[column].value_counts())
+# #     display(filtered_df[column].value_counts().to_frame())
+# # asds
+
+# """## First few lines"""
+
+
+# def head_exception(df: pd.DataFrame):
+#     try:
+#         first_k_lines = int(input("How many lines do you want to check? "))
+#         display(df.head(int(first_k_lines)))
+#     except ValueError:
+#         print("Invalid number")
+#     except Exception as e:
+#         print("An error occurred:", e)
+#     finally:
+#         print("--" * 20)
+
+
+# # head_exception(df)
+
+# """## Summary Statistics"""
+
+
+# def summary_statistics(df: pd.DataFrame):
+#     print("Numeric Attribtues are:")
+#     print(numerical_attributes)
+
+#     print("--" * 20)
+#     print("Summary statistics:")
+
+#     pd.options.display.float_format = "{:,.0f}".format
+
+#     summary_df = df[numerical_attributes].describe().transpose()
+
+#     display(summary_df)
+
+
+# # summary_statistics(df)
+
+# """## Count table"""
+
+
+# def download_excel(table: pd.DataFrame):
+#     table.to_excel("Frequency Table.xlsx", index=True)
+#     files.download("Frequency Table.xlsx")
+
+
+# def save_and_download_dataframes(dataframes: list[pd.DataFrame], folder_name="output"):
+#     # Create the folder if it doesn't exist
+#     os.makedirs(folder_name, exist_ok=True)
+
+#     for i, df in enumerate(dataframes):
+#         file_path = os.path.join(folder_name, f"data_{i + 1}.xlsx")
+#         df.to_excel(file_path, index=True)
+#         print(f"Table {i + 1} saved to: {file_path}")
+
+#     # Create a zip file containing all Excel files
+#     zip_path = f"{folder_name}.zip"
+#     os.system(f"zip -r {zip_path} {folder_name}")
+
+#     # Download the zip file
+#     files.download(zip_path)
+
+
+# def count_table(filtered_df: pd.DataFrame, selections: dict):
+#     columns = selections.keys()
+#     count_tables = []
+
+#     def create_count_table(pair):
+#         count_table = filtered_df.groupby(list(pair)).size().unstack(fill_value=0)
+#         count_table["Total"] = count_table.sum(axis=1)
+#         count_table.loc["Total"] = count_table.sum(axis=0)
+#         count_table.at["Total", "Total"] = count_table.values.sum()
+
+#         count_table = count_table.astype(int)
+
+#         for attribute, values in selections.items():
+#             if not values or attribute not in pair:
+#                 continue
+
+#             for value_range in values:
+#                 if type(value_range) in (tuple, list):
+#                     start, end = value_range
+#                     for value in range(start, end + 1):
+#                         if value not in count_table.index:
+#                             count_table.loc[value] = "NaN"
+#                         if value not in count_table.columns:
+#                             count_table[value] = "NaN"
+#                 else:
+#                     value = value_range
+#                     if value not in count_table.index:
+#                         count_table.loc[value] = "NaN"
+#                     if value not in count_table.columns:
+#                         count_table[value] = "NaN"
+
+#         return count_table
+
+#     if len(columns) > 1:
+#         # Display subsets of DataFrame for each combination of columns
+#         for pair in itertools.combinations(columns, 2):
+#             count_table = create_count_table(pair)
+#             display(count_table)
+#             count_tables.append(count_table)
+
+#         download_button = widgets.Button(description="Download")
+#         # download_button.on_click(lambda x: save_and_download_dataframes(count_tables))
+#         download_button.on_click(lambda x: download_excel(count_table))
+#         display(download_button)
+#     elif len(columns) == 1:
+#         for column, values in selections.items():
+#             value_counts_table = filtered_df[column].value_counts().reset_index()
+#             value_counts_table.columns = [column, "Count"]
+
+#             for value in values:
+#                 if value not in value_counts_table[column].values:
+#                     value_counts_table = value_counts_table.append(
+#                         {column: value, "Count": "NaN"}, ignore_index=True
+#                     )
+
+#             download_button = widgets.Button(description="Download Table")
+#             download_button.on_click(lambda x: download_excel(value_counts_table))
+
+#             display(value_counts_table, download_button)
+#     else:
+#         print("Nothing selected")
+
+
+# class ClientStateMachine:
+#     def __init__(self):
+#         self.STATES = {
+#             "State Choosing": 0,
+#             "Make Selection": 1,
+#             "Describe Selection": 2,
+#             "Plot Selection": 3,
+#         }
+#         self.state = self.STATES["State Choosing"]
+
+#     def get_state(self) -> int:
+#         return self.state
+
+#     def set_state(self, state: str):
+#         if state in self.STATES:
+#             self.state = self.STATES[state]
+#         else:
+#             raise ValueError(f"Invalid state: {state}")
+
+
+# """# Step 6: Run Plotting Functions"""
+
+
+# class FilterOptionWidget(widgets.HBox):
+#     def __init__(self, filter_data=None, parent=None, grouping_list=None):
+#         super().__init__()
+
+#         self.parent = parent
+#         self.filter_data = filter_data if filter_data else []
+#         self.grouping_list = grouping_list if grouping_list else []
+
+#         filter_info = widgets.Label(value=str(self.filter_data))
+
+#         delete_button = widgets.Button(icon="times", button_style="danger")
+#         delete_button.on_click(self.on_delete_button_clicked)
+
+#         self.children = (
+#             widgets.Box(
+#                 [delete_button, filter_info],
+#                 layout=widgets.Layout(
+#                     border="2px solid #888", padding="10px", border_radius="10px"
+#                 ),
+#             ),
+#         )
+
+#         self.parent.children = self.parent.children + (self,)
+
+#     def on_delete_button_clicked(self, button):
+#         self.close()
+
+#     def close(self):
+#         self.remove_grouping()
+#         self.update_ui()
+
+#     def remove_grouping(self):
+#         try:
+#             grouping_variable, grouping_values = self.filter_data
+#             self.grouping_list.remove((grouping_variable, grouping_values))
+#         except ValueError:
+#             print(f"Error: Grouping {self.filter_data} not found in grouping list.")
+
+#     def update_ui(self):
+#         self.parent.children = [
+#             child for child in self.parent.children if child is not self
+#         ]
+
+
+# grouping_list = []
+
+
+# def x_y_boxplot(x: str, y: str, df=data, groups=None, grouping_type="sum") -> go.Figure:
+#     """
+#     Generate a boxplot with the x-axis as a categorical variable and y-axis as a numeric variable.
+
+#     Parameters:
+#     x (str): Column name for the x-axis (categorical variable).
+#     y (str): Column name for the y-axis (numeric variable).
+#     df (pd.DataFrame): DataFrame containing the data.
+#     groups (list): List of additional groupings (optional).
+#     grouping_type (str): Type of grouping to apply (default is "sum").
+
+#     Returns:
+#     fig: Plotly Figure object.
+#     """
+#     if groups is None:
+#         groups = []
+
+#     if not pd.api.types.is_numeric_dtype(df[y]):
+#         raise ValueError(f"The y-axis column '{y}' must be numeric.")
+
+#     fig = px.box(df, x=x, y=y, title=f"Boxplot of ({y}) by ({x})")
+#     return fig
+
+
+# def x_boxplot(
+#     x: str, df: pd.DataFrame, groups: list = None, grouping_type="sum"
+# ) -> go.Figure:
+#     """
+#     Generate a boxplot with the x-axis as a categorical variable.
+
+#     Parameters:
+#     x (str): Column name for the y-axis (categorical variable).
+#     df (pd.DataFrame): DataFrame containing the data.
+#     groups (list): List of tuples for additional groupings (optional).
+#     grouping_type (str): Type of grouping to apply (default is "sum").
+
+#     Returns:
+#     go.Figure: Plotly Figure object.
+#     """
+#     if groups is None:
+#         groups = []
+
+#     print(f"grouping type: {grouping_type}")
+#     if len(groups) > 0:
+#         fig = go.Figure()
+
+#         for column, values in groups:
+#             subset = filter_subset(df, [(column, values)])
+#             fig.add_trace(
+#                 go.Box(y=subset[x], name=f"Boxplot of ({x}) for {column}={values}")
+#             )
+#             fig.update_xaxes(showticklabels=False)
+#             fig.update_layout(yaxis_title=x, title=f"Boxplot of {x} by groups")
+#     else:
+#         fig = px.box(df, y=x, title=f"Boxplot of ({x})")
+
+#     return fig
+
+
+# def x_y_scatter(x: str, y: str, df: pd.DataFrame, groups: list = None) -> go.Figure:
+#     """
+#     Generate a scatter plot with the x-axis and y-axis as numeric variables.
+
+#     Parameters:
+#     x (str): Column name for the x-axis (numeric variable).
+#     y (str): Column name for the y-axis (numeric variable).
+#     df (pd.DataFrame): DataFrame containing the data.
+
+#     Returns:
+#     px.scatter: Plotly scatter plot figure.
+#     """
+#     if df is None:
+#         raise ValueError("The input DataFrame is empty.")
+
+#     if groups is None:
+#         groups = []
+
+#     if not pd.api.types.is_numeric_dtype(df[x]):
+#         raise ValueError(f"The x-axis column '{x}' must be numeric.")
+#     if not pd.api.types.is_numeric_dtype(df[y]):
+#         raise ValueError(f"The y-axis column '{y}' must be numeric.")
+
+#     # TODO: add grouping
+
+#     fig = px.scatter(df, x=x, y=y, title=f"Scatter plot of ({y}) by ({x})")
+#     fig.update_traces(hoverinfo="skip", hovertemplate=None)
+
+#     return fig
+
+
+# # fig3 = x_y_scatter(x = "EDSCOR50",y ="INCWAGE",df = data)
+# # fig3.show()
+
+
+# # This only plot, only one plot, the segment of data is about the filtering
+# def x_y_stacked(x: str, y: str, df: pd.DataFrame) -> go.Figure:
+#     """
+#     Generate a stacked bar plot with the x-axis as a categorical variable
+#     and y-axis as a categorical variable showing proportions.
+
+#     :param x: Column name for the x-axis (categorical variable).
+#     :param y: Column name for the y-axis (categorical variable).
+#     :param df: DataFrame containing the data.
+
+#     :return: px.Bar instance
+#     """
+#     if df is None:
+#         raise ValueError("The input DataFrame is empty.")
+
+#     if not isinstance(df[x], pd.CategoricalDtype):
+#         raise ValueError(f"The x-axis column '{x}' must be categorical.")
+#     if not isinstance(df[y], pd.CategoricalDtype):
+#         raise ValueError(f"The y-axis column '{y}' must be categorical.")
+
+#     counts = df.groupby([x, y]).size().unstack(fill_value=0)
+
+#     # Normalize the counts to get proportions
+#     proportions = counts.div(counts.sum(axis=1), axis=0) * 100
+#     # Reshape the DataFrame for Plotly
+#     proportions.reset_index(inplace=True)
+#     proportions_melted = pd.melt(
+#         proportions, id_vars=[x], var_name=y, value_name="Percentage"
+#     )
+
+#     # Plot using Plotly Express
+#     fig = px.bar(
+#         proportions_melted,
+#         x=x,
+#         y="Percentage",
+#         color=y,  # Color represents the stacked bars
+#         barmode="stack",
+#         labels={"Percentage": "Proportion (%)"},
+#         title=f"Stacked Bar Plot of ({y}) Proportions for different ({x})",
+#         hover_name=y,
+#         hover_data={"Percentage": ":.2f%"},
+#     )
+
+#     return fig
+
+
+# # fig1 = x_y_stacked(x = "SEX", y = "RACE", df= data)
+# # fig1.show()
+
+# from typing import *
+# import pandas as pd
+# import plotly.express as px
+# import plotly.graph_objects as go
+# from functools import reduce
+
+
+# def and_filter_subset(
+#     subset: pd.DataFrame, filter_list: Dict[str, Union[tuple, list, str]] | tuple | list
+# ) -> pd.DataFrame:
+#     print(f"And filter subset list: {filter_list}")
+
+#     if not filter_list:
+#         return subset
+#     filter_conditions = [
+#         (
+#             subset[column].isin(value)
+#             if isinstance(value, (list, tuple))
+#             else subset[column] == value
+#         )
+#         for column, value in (
+#             filter_list.items() if isinstance(filter_list, dict) else filter_list
+#         )
+#     ]
+#     combined_condition = reduce(lambda x, y: x | y, filter_conditions)
+#     return subset[combined_condition]
+
+
+# def filter_subset(
+#     subset: pd.DataFrame, filter_list: Dict[str, Union[tuple, list, str]] | tuple | list
+# ) -> pd.DataFrame:
+#     print(f"Filter subset list: {filter_list}")
+
+#     if subset is None:
+#         raise ValueError("The input DataFrame is None.")
+#     for column, value in (
+#         filter_list.items() if isinstance(filter_list, dict) else filter_list
+#     ):
+#         subset = subset[
+#             (
+#                 subset[column].isin(value)
+#                 if isinstance(value, (list, tuple))
+#                 else subset[column] == value
+#             )
+#         ]
+#     return subset
+
+
+# def x_stacked(x: str, df: pd.DataFrame) -> go.Figure:
+#     if df is None:
+#         raise ValueError("The input DataFrame is None.")
+#     proportions = df[x].value_counts(normalize=True).reset_index()
+#     proportions.columns = [x, "Proportion"]
+#     proportions["Proportion"] *= 100
+
+#     fig = go.Figure(
+#         data=[
+#             go.Bar(
+#                 x=proportions[x],
+#                 y=proportions["Proportion"],
+#                 text=proportions["Proportion"],
+#                 textposition="auto",
+#             )
+#         ]
+#     )
+
+#     fig.update_layout(
+#         title=f"Stacked Bar Plot of ({x}) Proportions",
+#         xaxis_title=x,
+#         yaxis_title="Proportion (%)",
+#         barmode="stack",
+#     )
+
+#     return fig
+
+
+# def plot_generic_data(
+#     plot_func,
+#     x: str,
+#     y: str,
+#     df: pd.DataFrame,
+#     groups: List[Tuple[str, list]] | None = None,
+#     grouping_type: str = "sum",
+# ) -> go.Figure:
+#     if groups is None:
+#         groups = []
+
+#     def get_grouped_data(subset: pd.DataFrame) -> pd.Series:
+#         if grouping_type == "count":
+#             return subset.groupby(x)[x].count()
+#         elif y not in numerical_attributes:
+#             if grouping_type in ("sum", "cluster sum"):
+#                 return subset.groupby(x)[y].size()
+#             elif grouping_type in ("avg", "cluster avg"):
+#                 grouped_data = subset.groupby(x)[y].agg(["count", "nunique"])
+#                 return grouped_data["count"] / grouped_data["nunique"]
+#         elif grouping_type in ("sum", "cluster sum"):
+#             return subset.groupby(x)[y].sum()
+#         elif grouping_type in ("avg", "cluster avg"):
+#             return subset.groupby(x)[y].mean()
+
+#         return pd.Series()
+
+#     fig = go.Figure()
+#     fig.update_layout(
+#         xaxis_title=x, yaxis_title=y, title=f"{grouping_type} of {y} by {x}"
+#     )
+
+#     if not groups:
+#         grouped_data = get_grouped_data(df)
+#         plot_func(grouped_data, fig)
+#     else:
+#         if grouping_type in ["sum", "avg"]:
+#             subset = and_filter_subset(df, groups)
+#             grouped_data = get_grouped_data(subset)
+#             plot_func(grouped_data, fig, group_name=f"{grouping_type} of {y} by {x}")
+#         else:
+#             for column, values in groups:
+#                 subset = filter_subset(df, {column: values})
+#                 grouped_data = get_grouped_data(subset)
+#                 plot_func(grouped_data, fig, group_name=f"{column}={values}")
+
+#     return fig
+
+
+# def plot_line_data(
+#     x: str,
+#     y: str,
+#     df: pd.DataFrame,
+#     groups: List[Tuple[str, list]] | None = None,
+#     grouping_type: str = "sum",
+# ) -> go.Figure:
+#     def line_plot(data, fig, group_name=None):
+#         fig.add_trace(
+#             go.Scatter(x=data.index, y=data.values, mode="lines", name=group_name)
+#         )
+
+#     return plot_generic_data(line_plot, x, y, df, groups, grouping_type)
+
+
+# def plot_area_data(
+#     x: str,
+#     y: str,
+#     df: pd.DataFrame,
+#     groups: List[Tuple[str, list]] | None = None,
+#     grouping_type: str = "sum",
+# ) -> go.Figure:
+#     def area_plot(data, fig, group_name=None):
+#         fig.add_trace(
+#             go.Scatter(x=data.index, y=data.values, fill="tozeroy", name=group_name)
+#         )
+
+#     return plot_generic_data(area_plot, x, y, df, groups, grouping_type)
+
+
+# def plot_clustered_bar_data(
+#     x: str,
+#     y: str,
+#     df: pd.DataFrame,
+#     groups: List[Tuple[str, list]] | None = None,
+#     grouping_type: str = "sum",
+# ) -> go.Figure:
+#     labels = dict(index=x, value=f"{grouping_type} of {y} by {x}", barmode="group")
+
+#     def get_grouped_data(subset):
+#         if grouping_type == "count":
+#             return subset.groupby(x)[x].count()
+#         else:
+#             if y not in numerical_attributes:
+#                 if grouping_type in ("sum", "cluster sum"):
+#                     return subset.groupby(x)[y].size()
+#                 elif grouping_type in ("avg", "cluster avg"):
+#                     grouped_data = subset.groupby(x)[y].agg(["count", "nunique"])
+#                     return grouped_data["count"] / grouped_data["nunique"]
+#             if grouping_type in ("sum", "cluster sum"):
+#                 return subset.groupby(x)[y].sum()
+#             elif grouping_type in ("avg", "cluster avg"):
+#                 return subset.groupby(x)[y].mean()
+
+#     fig = px.bar()
+#     fig.update_layout(
+#         xaxis_title=x, yaxis_title=y, title=labels["value"], barmode="group"
+#     )
+
+#     if len(groups) == 0:
+#         grouped_data = get_grouped_data(df)
+#         print(grouped_data)
+#         fig = px.bar(grouped_data, title=labels["value"], labels=labels)
+#     else:
+#         if grouping_type in ["sum", "avg"]:
+#             subset = and_filter_subset(df, groups)
+#             grouped_data = get_grouped_data(subset)
+#             print(grouped_data)
+#             fig = px.bar(grouped_data, title=labels["value"], labels=labels)
+#         else:
+#             for column, values in groups:
+#                 subset = filter_subset(df, [(column, values)])
+#                 grouped_data = get_grouped_data(subset)
+
+#                 fig.add_bar(
+#                     x=grouped_data.index,
+#                     y=grouped_data.values,
+#                     name=f"{column}={values}",
+#                 )
+
+#     return fig
+
+
+# def plot_clustered_percentage_bar_data(
+#     x: str,
+#     y: str,
+#     df: pd.DataFrame,
+#     groups: List[Tuple[str, list]] | None = None,
+#     grouping_type: str = "sum",
+# ) -> go.Figure:
+#     labels = dict(index=x, value=f"Percentage of {y} by {x}", barmode="group")
+
+#     if groups is None:
+#         groups = []
+
+#     def get_grouped_data(subset):
+#         if grouping_type == "count":
+#             return (
+#                 subset.groupby(x)[x].value_counts(normalize=True).unstack(fill_value=0)
+#                 * 100
+#             )
+#         else:
+#             return (
+#                 subset.groupby(x)[y].value_counts(normalize=True).unstack(fill_value=0)
+#                 * 100
+#             )
+
+#     fig = px.bar()
+#     fig.update_layout(
+#         xaxis_title=x,
+#         yaxis_title=f"Percentage of {y}",
+#         title=labels["value"],
+#         barmode="relative" if grouping_type in ["sum", "avg"] else "overlay",
+#     )
+
+#     if len(groups) == 0:
+#         grouped_data = get_grouped_data(df)
+#         fig = px.bar(grouped_data, title=labels["value"], labels=labels)
+#     else:
+#         if grouping_type in ["sum", "avg"]:
+#             subset = and_filter_subset(df, groups)
+#             grouped_data = get_grouped_data(subset)
+
+#             fig = px.bar(grouped_data, title=labels["value"], labels=labels)
+#         else:
+#             for column, values in groups:
+#                 subset = filter_subset(df, [(column, values)])
+#                 grouped_data = get_grouped_data(subset)
+
+#                 fig.add_bar(
+#                     x=grouped_data.index,
+#                     y=grouped_data.values.flatten(),
+#                     name=f"{column}={values}",
+#                 )
+
+#     return fig
+
+
+# def render_graph(
+#     data: pd.DataFrame,
+#     kind: str,
+#     x_axis: str = "YEAR",
+#     y_axis: str = "Count",
+#     groups: List[Tuple[str, list]] | None = None,
+#     grouping_type: str | None = None,
+#     year_range: Tuple[int, int] | None = None,
+#     top_k: int = 0,
+#     filter_list: Dict[str, Union[list, tuple, str]] | None = None,
+# ) -> go.Figure:
+#     if filter_list is None:
+#         filter_list = {}
+#     if groups is None:
+#         groups = []
+#     subset = data
+#     if filter_list:
+#         subset = filter_subset(subset, filter_list)
+#     if year_range:
+#         subset = subset[
+#             subset["YEAR"].between(year_range[0], year_range[1], inclusive="both")
+#         ]
+
+#     plot_func_map = {
+#         "line": plot_line_data,
+#         "area": plot_area_data,
+#         "scatter": lambda x, y, df, groups, *args: x_y_scatter(
+#             x=x, y=y, df=df, groups=groups
+#         ),
+#         "box": lambda x, y, df, groups, *args: x_boxplot(x=x, df=subset, groups=groups),
+#         "grouped bar": plot_clustered_bar_data,
+#         "stacked bar": plot_clustered_percentage_bar_data,
+#     }
+
+#     fig = plot_func_map.get(kind, lambda *args: None)(
+#         x_axis, y_axis, subset, groups, grouping_type
+#     )
+
+#     if fig:
+#         fig.update_layout(legend=dict(orientation="h"))
+
+#     return fig
+
+
+# from typing import *
+# import pandas as pd
+# import plotly.graph_objects as go
+# import plotly.express as px
+# import ipywidgets as widgets
+# from functools import reduce
+
+
+# def plotting(data, filter_list):
+#     global grouping_list
+
+#     output_widget = widgets.Output()
+#     style = {"description_width": "initial"}
+#     grouping_list = []
+#     group_filter_container = widgets.VBox()
+
+#     plot_type = widgets.Dropdown(
+#         options=["line", "box", "area", "scatter", "stacked bar", "grouped bar"],
+#         value="line",
+#         description="Plot type:",
+#     )
+
+#     x_axis = widgets.Dropdown(options=options_list, description="X-Axis:", style=style)
+#     y_axis = widgets.Dropdown(options=options_list, description="Y-Axis:", style=style)
+
+#     if plot_type.value in ("box", "stacked bar"):
+#         y_axis.layout.visibility = "hidden"
+
+#     grouping_variable = widgets.Dropdown(
+#         options=options_list, description="Group variable:", style=style
+#     )
+#     grouping_variable_options = option_value_dictionary
+
+#     grouping_variable_values = widgets.SelectMultiple(
+#         options=[],
+#         description="Values:",
+#         style=style,
+#     )
+#     grouping_variable_values.layout.height = "200px"
+#     grouping_variable_values.layout.width = "60%"
+
+#     grouping_type = widgets.Dropdown(
+#         options=["sum", "avg", "cluster sum", "cluster avg", "count"],
+#         description="Y-axis functions:",
+#         style=style,
+#     )
+
+#     def update_output(fig):
+#         with output_widget:
+#             output_widget.clear_output(wait=True)
+#             fig.show()
+
+#     def update_grouping_options(change):
+#         selected_option = change.new
+#         if selected_option in grouping_variable_options:
+#             second_options = grouping_variable_options[selected_option]
+#             grouping_variable_values.options = second_options
+
+#     grouping_variable.observe(update_grouping_options, names=["value"])
+
+#     def grouping_interaction(button):
+#         grouping_list.append((grouping_variable.value, grouping_variable_values.value))
+#         filter_widget = FilterOptionWidget(
+#             filter_data=(grouping_variable.value, grouping_variable_values.value),
+#             parent=group_filter_container,
+#             grouping_list=grouping_list,
+#         )
+
+#     group_button = widgets.Button(
+#         description="Group", button_style="success", style=style
+#     )
+#     group_button.on_click(grouping_interaction)
+
+#     def update_plot_type(change):
+#         t_plot_type = change.new
+
+#         if t_plot_type == "box":
+#             x_axis.options = numerical_attributes
+#         elif change.old == "box":
+#             x_axis.options = options_list
+
+#         if t_plot_type == "scatter":
+#             y_axis.options = numerical_attributes
+#         elif change.old == "scatter":
+#             y_axis.options = options_list
+
+#         y_axis.layout.visibility = "hidden" if t_plot_type == "box" else "visible"
+#         grouping_layout.layout.visibility = (
+#             "visible"
+#             if t_plot_type in ("box", "area", "line", "grouped bar", "stacked bar")
+#             else "hidden"
+#         )
+
+#         if grouping_layout.layout.visibility == "hidden":
+#             grouping_variable_values.value = []
+#             for widget in group_filter_container.children:
+#                 widget.close()
+
+#         grouping_type.layout.visibility = (
+#             "hidden" if t_plot_type == "box" else "visible"
+#         )
+
+#     plot_type.observe(update_plot_type, names=["value"])
+
+#     make_plot_button = widgets.Button(
+#         description="Make plot", button_style="info", style=style
+#     )
+#     make_plot_button.on_click(
+#         lambda x: update_output(
+#             render_graph(
+#                 data,
+#                 plot_type.value,
+#                 x_axis.value,
+#                 y_axis.value,
+#                 grouping_list,
+#                 grouping_type.value,
+#                 filter_list=filter_list,
+#             )
+#         )
+#     )
+
+#     done_button = widgets.Button(description="Done", button_style="warning")
+#     done_button.on_click(lambda x: main_menu(data))
+
+#     selection_layout = widgets.HBox([widgets.Text("Selection")])
+#     plotting_layout = widgets.VBox(
+#         [
+#             widgets.HBox([plot_type, make_plot_button]),
+#             widgets.HBox([x_axis]),
+#             widgets.HBox([y_axis, done_button]),
+#         ]
+#     )
+#     grouping_layout = widgets.VBox(
+#         [
+#             widgets.HBox([grouping_variable, group_button]),
+#             widgets.HBox([grouping_variable_values, grouping_type]),
+#             group_filter_container,
+#         ]
+#     )
+
+#     Layout = widgets.VBox(
+#         [
+#             selection_layout,
+#             plotting_layout,
+#             grouping_layout,
+#             widgets.HBox([output_widget]),
+#         ]
+#     )
+#     display(Layout)
+
+
+# """# Step 7: Modified Make selection, describe selections"""
+
+
+# def main_menu(df: pd.DataFrame):
+#     global csm
+#     csm.set_state("State Choosing")
+#     print("--" * 20)
+#     print("This is the main menu, you have the following three things you can do.")
+#     print("This is the selection you have made:")
+#     for attribute, value in selections.items():
+#         print(f"{attribute}: {value}")
+
+#     def selection_mode(button):
+#         global selections
+#         try:
+#             chosen = dropdown.value
+#             if chosen == "1":
+#                 make_selection_menu(df)
+#             elif chosen == "2":
+#                 desdcribe_selection_menu(df)
+#             elif chosen == "3":
+#                 plotting(df, selections)
+#                 # somewhere you input the ploting, you can use filtered_df as "df"
+#             elif chosen == "4":
+#                 selections = {}
+#                 main_menu(df)
+#         except:
+#             main_menu(df)
+
+#     # Dropdown options
+#     state_options = {
+#         "Make Selection": "1",
+#         "Describe Selection": "2",
+#         "Plot Selection": "3",
+#         "Clear selections": "4",
+#     }
+
+#     # Create dropdown widgets
+#     dropdown = widgets.Dropdown(options=state_options, description="Select mode:")
+
+#     # Create buttons
+#     finish_button = widgets.Button(description="Choose")
+
+#     # Set button click actions
+#     finish_button.on_click(selection_mode)
+
+#     # Display the dropdown and buttons
+#     display(dropdown, finish_button)
+
+
+# def make_selection_menu(df: pd.DataFrame):
+#     global csm
+#     csm.set_state("Make Selection")
+#     print("--" * 20)
+#     print("You can modify the subset you want to check in this section.")
+#     print("Current Selections:")
+#     for attribute, value in selections.items():
+#         print(f"{attribute}: {value}")
+
+#     def selection_mode(button):
+#         try:
+#             chosen = dropdown.value
+#             if chosen == "1":
+#                 numeric_selections(df)
+#             elif chosen == "2":
+#                 # categorical_selections(df)
+#                 # categorical_selections_with_search(df)
+#                 create_ui(df, categorical_attributes)
+#             elif chosen == "3":
+#                 delete_selections(df)
+#             elif chosen == "4":
+#                 main_menu(df)
+#         except:
+#             make_selection_menu(df)
+
+#     # Dropdown options
+#     state_options = {
+#         "Numeric Variables": "1",
+#         "Categorical Variables": "2",
+#         "Delete Selections": "3",
+#         "Main Menu": "4",
+#     }
+
+#     # Create dropdown widget
+#     dropdown = widgets.Dropdown(options=state_options, description="Select mode:")
+
+#     # Create buttons
+#     finish_button = widgets.Button(description="Choose")
+
+#     # Set button click actions
+#     finish_button.on_click(selection_mode)
+
+#     # Display the dropdown and buttons
+#     display(dropdown, finish_button)
+
+
+# def desdcribe_selection_menu(df: pd.DataFrame):
+#     global csm
+#     csm.set_state("Describe Selection")
+#     print("--" * 20)
+#     print(
+#         "Filtering the dateframe using the following selection, and you can check the filtered dataframe."
+#     )
+#     print("Selections:")
+
+#     for attribute, value in selections.items():
+#         print(f"{attribute}: {value}")
+#     global filtered_df
+#     filtered_df = filter_dataframe(df, selections)
+
+#     def selection_mode(button):
+#         global filtered_df
+#         global selections
+
+#         if filtered_df is None:
+#             filtered_df = filter_dataframe(df, selections)
+#         # try:
+#         chosen = dropdown.value
+#         if chosen == "1":
+#             display(filtered_df.head(10))
+#             desdcribe_selection_menu(df)
+#         elif chosen == "2":
+#             summary_statistics(filtered_df)
+#             desdcribe_selection_menu(df)
+#         elif chosen == "3":
+#             count_table(filtered_df, selections)
+#             desdcribe_selection_menu(df)
+#         elif chosen == "4":
+#             main_menu(df)
+#         elif chosen == "5":
+#             filtered_df = None
+#             selections = {}
+#             main_menu(df)
+#         # except:
+#         #  print("Something wrong, try again.")
+#         #  desdcribe_selection_menu(df)
+
+#     # Dropdown options
+#     state_options = {
+#         "First 10 Lines": "1",
+#         "Summary statistics": "2",
+#         "Frequency Table": "3",
+#         "Keep Dataframe": "4",
+#         "Discard Dataframe": "5",
+#     }
+
+#     # Create dropdown widget
+#     dropdown = widgets.Dropdown(options=state_options, description="Select mode:")
+
+#     # Create buttons
+#     finish_button = widgets.Button(description="Choose")
+
+#     # Set button click actions
+#     finish_button.on_click(selection_mode)
+
+#     # Display the dropdown and buttons
+#     display(dropdown, finish_button)
 
 
 """# Step 8 UI Interface"""

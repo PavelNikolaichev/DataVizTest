@@ -22,6 +22,8 @@ from ipywidgets import (
 from google.colab import output, drive, files
 from .ui import make_selection_menu
 
+from __init__ import *
+
 drive.mount("/content/drive")
 
 plt.rcParams["figure.dpi"] = 120

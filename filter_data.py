@@ -2,6 +2,8 @@ from functools import reduce
 from typing import Dict, Union
 import pandas as pd
 
+from __init__ import *
+
 
 def filter_dataframe(dataframe: pd.DataFrame, selection: dict) -> pd.DataFrame:
     filtered_df = dataframe.copy()  # Start with a copy of the original DataFrame

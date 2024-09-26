@@ -1,6 +1,7 @@
 import os
 import pandas as pd
 from google.colab import files
+from __init__ import *
 
 
 def download_excel(table: pd.DataFrame):

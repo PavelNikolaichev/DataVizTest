@@ -5,6 +5,8 @@ import plotly.graph_objects as go
 import ipywidgets as widgets
 from functools import reduce
 
+from __init__ import *  # import global variables defined in __init__.py
+
 from ipywidgets import interact, widgets, Layout
 import pandas as pd
 
