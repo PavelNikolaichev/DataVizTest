@@ -20,8 +20,8 @@ def count_table(filtered_df: pd.DataFrame, selections: dict):
         count_table = count_table.astype(int)
 
         for attribute, values in selections.items():
-            if not values or attribute not in pair:
-                continue
+            # if not values or attribute not in pair:
+            #     continue
 
             for value_range in values:
                 if type(value_range) in (tuple, list):
