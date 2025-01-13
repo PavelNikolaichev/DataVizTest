@@ -741,6 +741,10 @@ def count_table(filtered_df: pd.DataFrame, selections: dict):
     count_tables = []
 
     def create_count_table(pair):
+        one, two = pair
+        if len(selections[one]) < len(selections[two]):
+            pair = (two, one)
+            
         count_table = filtered_df.groupby(list(pair)).size().unstack(fill_value=0)
         count_table["Total"] = count_table.sum(axis=1)
         count_table.loc["Total"] = count_table.sum(axis=0)
