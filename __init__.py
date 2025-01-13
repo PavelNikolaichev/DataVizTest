@@ -785,32 +785,12 @@ def count_table(filtered_df: pd.DataFrame, selections: dict):
                 if value not in count_table.columns:
                   count_table[value] = "NaN"
 
-        # for attribute, values in selections.items():
-        #     if not values or attribute not in pair:
-        #         continue
-
-        #     for value_range in values:
-        #         if type(value_range) in (tuple, list):
-        #             start, end = value_range
-        #             for value in range(start, end + 1):
-        #                 if value not in count_table.index:
-        #                     count_table.loc[value] = "NaN"
-        #                 if value not in count_table.columns:
-        #                     count_table[value] = "NaN"
-        #         else:
-        #             value = value_range
-        #             if value not in count_table.index:
-        #                 count_table.loc[value] = "NaN"
-        #             if value not in count_table.columns:
-        #                 count_table[value] = "NaN"
 
         return count_table
 
     if len(columns) > 1:
         # Display subsets of DataFrame for each combination of columns
 
-        # TODO: frequency table doesn't computed properly
-        #       it has a problems with duplicating the values in the rows and cols.
         for pair in itertools.combinations(columns, 2):
             count_table = create_count_table(pair)
             display(count_table)
@@ -818,7 +798,6 @@ def count_table(filtered_df: pd.DataFrame, selections: dict):
 
         download_button = widgets.Button(description="Download")
         download_button.on_click(lambda x: save_and_download_dataframes(count_tables))
-        # download_button.on_click(lambda x: download_excel(count_table))
         display(download_button)
     elif len(columns) == 1:
         for column, values in selections.items():
