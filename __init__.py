@@ -752,24 +752,57 @@ def count_table(filtered_df: pd.DataFrame, selections: dict):
 
         count_table = count_table.astype(int)
 
-        for attribute, values in selections.items():
-            if not values or attribute not in pair:
-                continue
+        row_attribute, column_attribute = pair
 
-            for value_range in values:
-                if type(value_range) in (tuple, list):
-                    start, end = value_range
-                    for value in range(start, end + 1):
+        if type(selections.get(row_attribute, None)) not in (tuple, list) and type(selections.get(column_attribute, None)) not in (tuple, list):
+            for value in selections[row_attribute]:
+                if value not in count_table.index:
+                    count_table.loc[value] = "NaN"
+            
+            for value in selections[column_attribute]:
+                if value not in count_table.columns:
+                    count_table[value] = "NaN"
+        else:
+            if type(selections.get(row_attribute, None)) not in (tuple, list):
+                for ranging in selections[row_attribute]:
+                    start, end = ranging[0], ranging[1]
+                    for value in range(start, end+1):
                         if value not in count_table.index:
                             count_table.loc[value] = "NaN"
-                        if value not in count_table.columns:
-                            count_table[value] = "NaN"
-                else:
-                    value = value_range
+            else:
+                for value in selections[row_attribute]:
                     if value not in count_table.index:
                         count_table.loc[value] = "NaN"
-                    if value not in count_table.columns:
-                        count_table[value] = "NaN"
+            
+            if type(selections.get(column_attribute, None)) not in (tuple, list):
+              for ranging in selections[column_attribute]:
+                start, end = ranging[0], ranging[1]
+                for value in range(start, end+1):
+                  if value not in count_table.columns:
+                    count_table[value] = "NaN"
+            else:
+              for value in selections[column_attribute]:
+                if value not in count_table.columns:
+                  count_table[value] = "NaN"
+
+        # for attribute, values in selections.items():
+        #     if not values or attribute not in pair:
+        #         continue
+
+        #     for value_range in values:
+        #         if type(value_range) in (tuple, list):
+        #             start, end = value_range
+        #             for value in range(start, end + 1):
+        #                 if value not in count_table.index:
+        #                     count_table.loc[value] = "NaN"
+        #                 if value not in count_table.columns:
+        #                     count_table[value] = "NaN"
+        #         else:
+        #             value = value_range
+        #             if value not in count_table.index:
+        #                 count_table.loc[value] = "NaN"
+        #             if value not in count_table.columns:
+        #                 count_table[value] = "NaN"
 
         return count_table
 
