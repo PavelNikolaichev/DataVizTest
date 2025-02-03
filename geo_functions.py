@@ -1,3 +1,4 @@
+from pathlib import PosixPath
 from IPython.display import clear_output
 import ast
 
@@ -22,7 +23,7 @@ from nl4ds.chatipums import DOWNLOAD_DIR
 global street_name_matching_mapping
 street_name_matching_mapping = {}
 
-data_folder_path = DOWNLOAD_DIR
+data_folder_path: PosixPath = DOWNLOAD_DIR
 
 # while True:
 #   data_folder_choice = "nyu"
@@ -32,7 +33,7 @@ data_folder_path = DOWNLOAD_DIR
 #   else:
 #     pass
 
-street_segment_df = pd.read_csv(data_folder_path +'/'+ 'hnyc_street_segment_1910_v20211125.csv', converters={'building_num_range': ast.literal_eval, 'start_end_coordinates': ast.literal_eval})
+street_segment_df = pd.read_csv(data_folder_path + '/' + 'hnyc_street_segment_1910_v20211125.csv', converters={'building_num_range': ast.literal_eval, 'start_end_coordinates': ast.literal_eval})
 global unique_street_names
 unique_street_names = street_segment_df['street_name'].dropna().unique().tolist()
 
