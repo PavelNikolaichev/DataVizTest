@@ -40,6 +40,7 @@ from .settings import *
 # from .data_processing import *
 # from .plotting import *
 # from .selection import *
+from .geo_functions import *
 
 
 def run(_data: pd.DataFrame):
@@ -1486,6 +1487,50 @@ def plotting(data, filter_list):
             widgets.HBox([output_widget]),
         ]
     )
+    display(Layout)
+
+def geospatial_menu(df: pd.DataFrame):
+    # Menu for geospatial features - loading data and visualizing geospatial data
+    # Loads either ch_addresses or buisnesses using geo_functions.py
+
+    # implement closure for dataframe that should be loaded in this section first, then use it to visualize data, on "Done" - exit this function and remove dataframe, returning to the main menu.
+    data = None
+    isBusiness = False
+
+    # TODO: filtering, there is a 'select' method to use the filter function
+    def load_nyc_chinese_data():
+        nonlocal data
+        data = get_gecoded_nyc_chinese_dataset()
+        isBusiness = False
+
+    def load_nyc_buisnesses_data():
+        nonlocal data
+        data = get_gecoded_business_directory_dataset()
+        isBusiness = True
+
+    def show_geospatial_data():
+        nonlocal data
+        nonlocal isBusiness
+        
+        if data is None:
+            print("No data loaded yet. Please load data first.")
+            return
+        
+        if isBusiness:
+            show_map(data)
+        else:
+            show_map_for_bus_dir(data)
+
+    
+
+    Layout = widgets.VBox([
+        widgets.Text("Geospatial menu"),
+        widgets.Button(description="Done", button_style="warning", on_click=lambda x: main_menu(df)),
+        widgets.Button(description="Load data", button_style="success", on_click=lambda x: load_data()),
+        widgets.Button(description="Load data", button_style="success", on_click=lambda x: load_data()),
+        widgets.Button(description="Visualize data", button_style="info", on_click=lambda x: visualize_data())
+    ])
+
     display(Layout)
 
 
