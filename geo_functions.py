@@ -16,17 +16,21 @@ import pandas as pd
 import numpy as np
 import folium
 
+from nl4ds.chatipums import DOWNLOAD_DIR
+
 
 global street_name_matching_mapping
 street_name_matching_mapping = {}
 
-while True:
-  data_folder_choice = "nyu"
-  if data_folder_choice.startswith('n'):
-    data_folder_path = '/content/drive/MyDrive/HIST SHU 239 NYC 2024 CoLab/CoLab Data'
-    break
-  else:
-    pass
+data_folder_path = DOWNLOAD_DIR
+
+# while True:
+#   data_folder_choice = "nyu"
+#   if data_folder_choice.startswith('n'):
+#     data_folder_path = '/content/drive/MyDrive/HIST SHU 239 NYC 2024 CoLab/CoLab Data'
+#     break
+#   else:
+#     pass
 
 street_segment_df = pd.read_csv(data_folder_path +'/'+ 'hnyc_street_segment_1910_v20211125.csv', converters={'building_num_range': ast.literal_eval, 'start_end_coordinates': ast.literal_eval})
 global unique_street_names
