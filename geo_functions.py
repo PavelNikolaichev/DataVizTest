@@ -1,12 +1,5 @@
 from IPython.display import clear_output
-
 import ast
-
-os.system('pip install python-Levenshtein')
-os.system('pip install geopy')
-os.system('pip install geographiclib')
-os.system('pip install thefuzz')
-os.system('pip install tqdm')
 
 from thefuzz import process
 from thefuzz import fuzz
@@ -153,8 +146,8 @@ def historical_geocode(df, street_segment_df):
 
 
 def add_back_non_geocodable_part(df, raw):
-  return df.append(raw[~raw['FID'].isin(df['FID'])], ignore_index=True).sort_values('FID')
-
+  appended = pd.concat([df, raw[~raw['FID'].isin(df['FID'])]], ignore_index=True) 
+  return appended.sort_values('FID')
 
 def get_gecoded_nyc_chinese_dataset():
   df, raw = load_and_prep_address_of_nyc_chinese_dataset()

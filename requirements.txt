@@ -11,3 +11,7 @@ matplotlib-venn==0.11.10
 geopandas==0.14.4
 geopy==2.4.1
 ipywidgets==7.7.1
+python-Levenshtein
+geographiclib
+thefuzz
+tqdm
