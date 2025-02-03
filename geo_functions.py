@@ -33,7 +33,7 @@ data_folder_path: PosixPath = DOWNLOAD_DIR
 #   else:
 #     pass
 
-street_segment_df = pd.read_csv(data_folder_path + '/' + 'hnyc_street_segment_1910_v20211125.csv', converters={'building_num_range': ast.literal_eval, 'start_end_coordinates': ast.literal_eval})
+street_segment_df = pd.read_csv(data_folder_path.as_posix() + '/' + 'hnyc_street_segment_1910_v20211125.csv', converters={'building_num_range': ast.literal_eval, 'start_end_coordinates': ast.literal_eval})
 global unique_street_names
 unique_street_names = street_segment_df['street_name'].dropna().unique().tolist()
 
