@@ -15,7 +15,7 @@ from warnings import simplefilter
 
 import ipywidgets as widgets
 import matplotlib.pyplot as plt
-from mapping import plot_map_data
+from .mapping import plot_map_data
 import numpy as np
 import pandas as pd
 import plotly.express as px
