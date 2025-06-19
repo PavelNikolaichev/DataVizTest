@@ -15,6 +15,7 @@ from warnings import simplefilter
 
 import ipywidgets as widgets
 import matplotlib.pyplot as plt
+from mapping import plot_map_data
 import numpy as np
 import pandas as pd
 import plotly.express as px
@@ -744,7 +745,7 @@ def count_table(filtered_df: pd.DataFrame, selections: dict):
         one, two = pair
         if len(selections[one]) < len(selections[two]):
             pair = (two, one)
-            
+
         count_table = filtered_df.groupby(list(pair)).size().unstack(fill_value=0)
         count_table["Total"] = count_table.sum(axis=1)
         count_table.loc["Total"] = count_table.sum(axis=0)
@@ -754,11 +755,13 @@ def count_table(filtered_df: pd.DataFrame, selections: dict):
 
         row_attribute, column_attribute = pair
 
-        if type(selections.get(row_attribute, None)) not in (tuple, list) and type(selections.get(column_attribute, None)) not in (tuple, list):
+        if type(selections.get(row_attribute, None)) not in (tuple, list) and type(
+            selections.get(column_attribute, None)
+        ) not in (tuple, list):
             for value in selections[row_attribute]:
                 if value not in count_table.index:
                     count_table.loc[value] = "NaN"
-            
+
             for value in selections[column_attribute]:
                 if value not in count_table.columns:
                     count_table[value] = "NaN"
@@ -766,25 +769,24 @@ def count_table(filtered_df: pd.DataFrame, selections: dict):
             if type(selections.get(row_attribute, None)) not in (tuple, list):
                 for ranging in selections[row_attribute]:
                     start, end = ranging[0], ranging[1]
-                    for value in range(start, end+1):
+                    for value in range(start, end + 1):
                         if value not in count_table.index:
                             count_table.loc[value] = "NaN"
             else:
                 for value in selections[row_attribute]:
                     if value not in count_table.index:
                         count_table.loc[value] = "NaN"
-            
-            if type(selections.get(column_attribute, None)) not in (tuple, list):
-              for ranging in selections[column_attribute]:
-                start, end = ranging[0], ranging[1]
-                for value in range(start, end+1):
-                  if value not in count_table.columns:
-                    count_table[value] = "NaN"
-            else:
-              for value in selections[column_attribute]:
-                if value not in count_table.columns:
-                  count_table[value] = "NaN"
 
+            if type(selections.get(column_attribute, None)) not in (tuple, list):
+                for ranging in selections[column_attribute]:
+                    start, end = ranging[0], ranging[1]
+                    for value in range(start, end + 1):
+                        if value not in count_table.columns:
+                            count_table[value] = "NaN"
+            else:
+                for value in selections[column_attribute]:
+                    if value not in count_table.columns:
+                        count_table[value] = "NaN"
 
         return count_table
 
@@ -1304,7 +1306,9 @@ def render_graph(
     year_range: Tuple[int, int] | None = None,
     top_k: int = 0,
     filter_list: Dict[str, Union[list, tuple, str]] | None = None,
-) -> go.Figure:
+    map_style: str = "OpenStreetMap",
+    cluster_markers: bool = True,
+) -> Union[go.Figure, Any]:  # Return type can be Plotly Figure or Folium Map
     if filter_list is None:
         filter_list = {}
     if groups is None:
@@ -1326,13 +1330,22 @@ def render_graph(
         "box": lambda x, y, df, groups, *args: x_boxplot(x=x, df=subset, groups=groups),
         "grouped bar": plot_clustered_bar_data,
         "stacked bar": plot_clustered_percentage_bar_data,
+        "map": lambda x, y, df, groups, grouping_type: plot_map_data(
+            address_col=x,
+            value_col=y if y != x else None,
+            df=df,
+            groups=groups,
+            grouping_type=grouping_type,
+            map_style=map_style,
+            cluster_markers=cluster_markers,
+        ),
     }
 
     fig = plot_func_map.get(kind, lambda *args: None)(
         x_axis, y_axis, subset, groups, grouping_type
     )
 
-    if fig:
+    if hasattr(fig, "update_layout"):  # It's a Plotly figure, not a map
         fig.update_layout(legend=dict(orientation="h"))
 
     return fig
@@ -1355,13 +1368,34 @@ def plotting(data, filter_list):
     group_filter_container = widgets.VBox()
 
     plot_type = widgets.Dropdown(
-        options=["line", "box", "area", "scatter", "stacked bar", "grouped bar"],
+        options=["line", "box", "area", "scatter", "stacked bar", "grouped bar", "map"],
         value="line",
         description="Plot type:",
     )
 
     x_axis = widgets.Dropdown(options=options_list, description="X-Axis:", style=style)
     y_axis = widgets.Dropdown(options=options_list, description="Y-Axis:", style=style)
+
+    map_style = widgets.Dropdown(
+        options=[
+            "OpenStreetMap",
+            "CartoDB Positron",
+            "CartoDB Dark Matter",
+            "Stamen Terrain",
+            "Stamen Toner",
+        ],
+        value="OpenStreetMap",
+        description="Map style:",
+        style=style,
+        layout=widgets.Layout(visibility="hidden"),
+    )
+
+    cluster_markers = widgets.Checkbox(
+        value=True,
+        description="Cluster markers",
+        style=style,
+        layout=widgets.Layout(visibility="hidden"),
+    )
 
     if plot_type.value in ("box", "stacked bar"):
         y_axis.layout.visibility = "hidden"
@@ -1385,10 +1419,16 @@ def plotting(data, filter_list):
         style=style,
     )
 
-    def update_output(fig):
+    def update_output(result):
         with output_widget:
             output_widget.clear_output(wait=True)
-            fig.show()
+            # Handle different result types
+            if hasattr(result, "show"):  # Plotly figure
+                result.show()
+            elif hasattr(result, "_repr_html_"):  # Folium map
+                display(result)
+            else:
+                print("Unable to display result")
 
     def update_grouping_options(change):
         selected_option = change.new
@@ -1424,10 +1464,27 @@ def plotting(data, filter_list):
         elif change.old == "scatter":
             y_axis.options = options_list
 
-        y_axis.layout.visibility = "hidden" if t_plot_type == "box" else "visible"
+        if t_plot_type == "map":
+            # For maps, X-axis should be address/location columns (usually text/categorical)
+            x_axis.description = "Address column:"
+            y_axis.description = "Value column (optional):"
+            # Show map-specific controls
+            map_style.layout.visibility = "visible"
+            cluster_markers.layout.visibility = "visible"
+        else:
+            x_axis.description = "X-Axis:"
+            y_axis.description = "Y-Axis:"
+            # Hide map-specific controls
+            map_style.layout.visibility = "hidden"
+            cluster_markers.layout.visibility = "hidden"
+
+        y_axis.layout.visibility = (
+            "hidden" if t_plot_type in ("box", "map") else "visible"
+        )
         grouping_layout.layout.visibility = (
             "visible"
-            if t_plot_type in ("box", "area", "line", "grouped bar", "stacked bar")
+            if t_plot_type
+            in ("box", "area", "line", "grouped bar", "stacked bar", "map")
             else "hidden"
         )
 
@@ -1445,19 +1502,22 @@ def plotting(data, filter_list):
     make_plot_button = widgets.Button(
         description="Make plot", button_style="info", style=style
     )
-    make_plot_button.on_click(
-        lambda x: update_output(
-            render_graph(
-                data,
-                plot_type.value,
-                x_axis.value,
-                y_axis.value,
-                grouping_list,
-                grouping_type.value,
-                filter_list=filter_list,
-            )
+
+    def make_plot_handler(x):
+        result = render_graph(
+            data,
+            plot_type.value,
+            x_axis.value,
+            y_axis.value,
+            grouping_list,
+            grouping_type.value,
+            filter_list=filter_list,
+            map_style=map_style.value,  # Pass map style
+            cluster_markers=cluster_markers.value,  # Pass clustering option
         )
-    )
+        update_output(result)
+
+    make_plot_button.on_click(make_plot_handler)
 
     done_button = widgets.Button(description="Done", button_style="warning")
     done_button.on_click(lambda x: main_menu(data))
@@ -1468,6 +1528,7 @@ def plotting(data, filter_list):
             widgets.HBox([plot_type, make_plot_button]),
             widgets.HBox([x_axis]),
             widgets.HBox([y_axis, done_button]),
+            widgets.HBox([map_style, cluster_markers]),
         ]
     )
     grouping_layout = widgets.VBox(
