@@ -1,16 +1,22 @@
-pandas==1.5.3
-pandas-datareader==0.10.0
-pandas-gbq==0.23.1
-pandas-stubs==2.1.4.231227
-pandocfilters==1.5.1
-ipumspy==0.5.1
-plotly==5.15.0
-matplotlib==3.7.1
-matplotlib-inline==0.1.7
-matplotlib-venn==0.11.10
-geopandas==0.14.4
-geopy==2.4.1
-ipywidgets==7.7.1
-folium==0.12.0
-geopy
+# Core data processing
+pandas==2.1.4
 numpy==1.26.4
+
+# Geospatial data
+geopandas==0.14.1
+geopy==2.4.1
+
+# Visualization
+plotly==5.17.0
+matplotlib==3.8.2
+folium==0.15.1
+
+# Interactive widgets
+ipywidgets==8.1.1
+
+# Data validation and configuration
+pydantic==2.5.0
+
+# Optional dependencies (maintain compatibility)
+pandas-stubs==2.1.4.231227
+ipumspy==0.5.1
