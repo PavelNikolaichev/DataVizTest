@@ -5,7 +5,7 @@ import plotly.graph_objects as go
 import ipywidgets as widgets
 from functools import reduce
 
-from data_processing import delete_selections, numeric_selections
+from .selection import delete_selections, numeric_selections, categorical_selections
 
 from .settings import *
 
@@ -16,7 +16,7 @@ from IPython.display import display, clear_output
 
 from .describe_data import count_table, summary_statistics
 from .filter_data import filter_dataframe
-from .plotting import render_graph
+from .plotting import render_graph, plotting
 from .widgets import FilterOptionWidget
 
 
@@ -142,148 +142,6 @@ def create_ui(df, categorical_attributes):
     display(add_button)
     display(done_button)
 
-
-def plotting(data, filter_list):
-    global grouping_list
-
-    output_widget = widgets.Output()
-    style = {"description_width": "initial"}
-    grouping_list = []
-    group_filter_container = widgets.VBox()
-
-    plot_type = widgets.Dropdown(
-        options=["line", "box", "area", "scatter", "stacked bar", "grouped bar"],
-        value="line",
-        description="Plot type:",
-    )
-
-    x_axis = widgets.Dropdown(options=options_list, description="X-Axis:", style=style)
-    y_axis = widgets.Dropdown(options=options_list, description="Y-Axis:", style=style)
-
-    if plot_type.value in ("box", "stacked bar"):
-        y_axis.layout.visibility = "hidden"
-
-    grouping_variable = widgets.Dropdown(
-        options=options_list, description="Group variable:", style=style
-    )
-    grouping_variable_options = option_value_dictionary
-
-    grouping_variable_values = widgets.SelectMultiple(
-        options=[],
-        description="Values:",
-        style=style,
-    )
-    grouping_variable_values.layout.height = "200px"
-    grouping_variable_values.layout.width = "60%"
-
-    grouping_type = widgets.Dropdown(
-        options=["sum", "avg", "cluster sum", "cluster avg", "count"],
-        description="Y-axis functions:",
-        style=style,
-    )
-
-    def update_output(fig):
-        with output_widget:
-            output_widget.clear_output(wait=True)
-            fig.show()
-
-    def update_grouping_options(change):
-        selected_option = change.new
-        if selected_option in grouping_variable_options:
-            second_options = grouping_variable_options[selected_option]
-            grouping_variable_values.options = second_options
-
-    grouping_variable.observe(update_grouping_options, names=["value"])
-
-    def grouping_interaction(button):
-        grouping_list.append((grouping_variable.value, grouping_variable_values.value))
-        filter_widget = FilterOptionWidget(
-            filter_data=(grouping_variable.value, grouping_variable_values.value),
-            parent=group_filter_container,
-            grouping_list=grouping_list,
-        )
-
-    group_button = widgets.Button(
-        description="Group", button_style="success", style=style
-    )
-    group_button.on_click(grouping_interaction)
-
-    def update_plot_type(change):
-        t_plot_type = change.new
-
-        if t_plot_type == "box":
-            x_axis.options = numerical_attributes
-        elif change.old == "box":
-            x_axis.options = options_list
-
-        if t_plot_type == "scatter":
-            y_axis.options = numerical_attributes
-        elif change.old == "scatter":
-            y_axis.options = options_list
-
-        y_axis.layout.visibility = "hidden" if t_plot_type == "box" else "visible"
-        grouping_layout.layout.visibility = (
-            "visible"
-            if t_plot_type in ("box", "area", "line", "grouped bar", "stacked bar")
-            else "hidden"
-        )
-
-        if grouping_layout.layout.visibility == "hidden":
-            grouping_variable_values.value = []
-            for widget in group_filter_container.children:
-                widget.close()
-
-        grouping_type.layout.visibility = (
-            "hidden" if t_plot_type == "box" else "visible"
-        )
-
-    plot_type.observe(update_plot_type, names=["value"])
-
-    make_plot_button = widgets.Button(
-        description="Make plot", button_style="info", style=style
-    )
-    make_plot_button.on_click(
-        lambda x: update_output(
-            render_graph(
-                data,
-                plot_type.value,
-                x_axis.value,
-                y_axis.value,
-                grouping_list,
-                grouping_type.value,
-                filter_list=filter_list,
-            )
-        )
-    )
-
-    done_button = widgets.Button(description="Done", button_style="warning")
-    done_button.on_click(lambda x: main_menu(data))
-
-    selection_layout = widgets.HBox([widgets.Text("Selection")])
-    plotting_layout = widgets.VBox(
-        [
-            widgets.HBox([plot_type, make_plot_button]),
-            widgets.HBox([x_axis]),
-            widgets.HBox([y_axis, done_button]),
-        ]
-    )
-    grouping_layout = widgets.VBox(
-        [
-            widgets.HBox([grouping_variable, group_button]),
-            widgets.HBox([grouping_variable_values, grouping_type]),
-            group_filter_container,
-        ]
-    )
-
-    Layout = widgets.VBox(
-        [
-            selection_layout,
-            plotting_layout,
-            grouping_layout,
-            widgets.HBox([output_widget]),
-        ]
-    )
-    display(Layout)
 
 
 def main_menu(df: pd.DataFrame):
